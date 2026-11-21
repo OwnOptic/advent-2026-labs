@@ -1,0 +1,151 @@
+Workshop "Welcoming new starters"
+Contoso, Copenhagen office · Monday 10 November 2026, 14:00 to 14:38 · Microsoft Teams meeting
+Participants: Elliot Margot (facilitator), Sophie Durand (Human Resources lead, Copenhagen), Karim Benali (IT support, workplace), Thomas Leroy (manager, Consulting team)
+Transcript generated automatically by Microsoft Teams
+
+0:00:04 Elliot Margot
+Hello everyone, thanks for being here. The goal for this hour is to understand how a new starter's arrival works today, what gets stuck, and to decide what we automate. We don't talk about tools yet, we talk about what really happens. Sophie, do you want to start?
+
+0:00:21 Sophie Durand
+Yes. So today, when someone joins, everything relies on people's memory. I enter the arrival in our SharePoint list "New starters", and then everyone is supposed to do their part. The problem is that the welcome email often goes out late, sometimes on the day itself, sometimes not at all.
+
+0:00:40 Elliot Margot
+What does that list contain?
+
+0:00:43 Sophie Durand
+The full name, the work email address, the job title, the start date, the manager, the buddy, and an "Equipment handed over" box, yes or no, which is set to no by default.
+
+0:00:55 Karim Benali
+And I'm the one who switches the box to yes when I've handed over the laptop and the badge. Well, when I remember.
+
+0:01:02 Elliot Margot
+OK. Thomas, how does it work on the manager side?
+
+0:01:06 Thomas Leroy
+Honestly, I sometimes find out that someone starts on Monday by reading my emails on Monday morning. I'm drowning in email. If you need to tell me, tell me in Teams, with the job title and the start date, that's all I need.
+
+0:01:20 Elliot Margot
+So a Teams message to the manager, not an email. Noted.
+
+0:01:24 Sophie Durand
+And the buddy isn't always aware either. Yet we have a rule: on the first day, at 11:00, there's a welcome coffee with the buddy. Thirty minutes, no more.
+
+0:01:37 Elliot Margot
+Is the coffee always on the start date?
+
+0:01:40 Sophie Durand
+Always on the start date, from 11:00 to 11:30, Copenhagen time, of course. With the new starter and their buddy. An Outlook invitation, so it's in both calendars.
+
+0:01:52 Elliot Margot
+Perfect. And the welcome email, what should it contain?
+
+0:01:57 Sophie Durand
+The programme for the first week, that's what people ask us most. I'll read it to you, it's in the welcome booklet. Monday: 9:00, welcome and badge on the ground floor; 9:30, equipment handover in the Harbour room, on the third floor; 11:00, the coffee with the buddy; 14:00, meeting with the manager. Tuesday: "Information security" training. Wednesday: team lunch. Thursday: data protection training. Friday: end-of-week meeting with the manager. And the address: 40 Demo Street, 1050 Copenhagen.
+
+0:02:35 Elliot Margot
+Which address do we send it to? Before they start, the person doesn't have access to their work mailbox yet.
+
+0:02:41 Sophie Durand
+For now we only have the address in the list. We'll send it to that one.
+
+0:02:46 Elliot Margot
+Very good. And what tone?
+
+0:02:49 Sophie Durand
+Warm and short. All in English. We want the person to look forward to coming, not to read a rulebook.
+
+0:02:57 Elliot Margot
+Karim, the equipment. What happens when it isn't handed over?
+
+0:03:02 Karim Benali
+Nothing, that's the problem. The new starter waits, doesn't dare to chase, and we notice a week later. Someone should check after a few days.
+
+0:03:12 Elliot Margot
+A few days, how many?
+
+0:03:15 Thomas Leroy
+Three days after the start date sounds right to me. In the morning, around 9:00. If the "Equipment handed over" box is still no, we remind the manager by email. There I do want an email, it leaves a trace.
+
+0:03:28 Karim Benali
+You could also put me in the loop, no? I'm the one who hands over the equipment.
+
+0:03:33 Thomas Leroy
+I don't know. If we tell everyone, nobody feels responsible anymore.
+
+0:03:38 Elliot Margot
+We won't decide now, I'll note it as an open question: does the reminder go to the manager only, or to the manager and IT support.
+
+0:03:47 Sophie Durand
+And the buddy, do we also tell them in Teams, like the manager?
+
+0:03:51 Elliot Margot
+Another open question: is the coffee invitation enough for the buddy, or do they also need a message? We'll see.
+
+0:03:58 Elliot Margot
+Second topic: questions. Sophie, you said new starters always ask the same ones?
+
+0:04:03 Sophie Durand
+All the time. How many remote work days, how to book leave, how to connect to the Wi-Fi, what the benefits are. The answer is in our documents, on the "Contoso - Human Resources" site, but nobody reads them.
+
+0:04:18 Elliot Margot
+Which documents exactly?
+
+0:04:21 Sophie Durand
+The Copenhagen welcome booklet, the 2026 remote work policy, the leave and absence guide, the IT guide for the first day, and the employee benefits. And there's an "Archives" folder on the site, where we kept the old 2021 remote work policy, for the record.
+
+0:04:38 Elliot Margot
+What does the old one say?
+
+0:04:40 Sophie Durand
+One remote work day per week. Today it's two. But we keep it, management wants the history.
+
+0:04:47 Elliot Margot
+OK. The idea would be an assistant, an agent, that the new starter asks their questions to, and that answers from your documents. What must it absolutely not do?
+
+0:04:58 Sophie Durand
+Make things up. If it doesn't know, it says so and sends people to us: hr@contoso.example, or extension 2100. And never personal or salary information about someone else.
+
+0:05:10 Thomas Leroy
+And it shouldn't do anything on the new starter's behalf. No booking leave, no ordering equipment. It explains how to do it, that's all.
+
+0:05:18 Elliot Margot
+Which language does it answer in, and where?
+
+0:05:21 Sophie Durand
+In English. And in Teams, that's where everyone is all day.
+
+0:05:26 Elliot Margot
+Does it cite its sources?
+
+0:05:28 Sophie Durand
+Yes, always. I want to be able to check where an answer comes from.
+
+0:05:33 Karim Benali
+Security question: it only sees the Human Resources site? Not all of SharePoint, not the internet?
+
+0:05:39 Elliot Margot
+Only the Human Resources site. No web search, no access to people's emails or files. I'll write it down as a requirement.
+
+0:05:47 Elliot Margot
+Before we publish, how will we know it answers correctly?
+
+0:05:51 Sophie Durand
+I can give you the ten questions we get asked the most, with the right answer. Including one or two it must refuse to answer, like the manager's salary.
+
+0:06:00 Elliot Margot
+Perfect, that will be our evaluation set. We publish only if it passes.
+
+0:06:04 Elliot Margot
+To sum up. A workflow, triggered when a row is added to "New starters": a welcome email with the programme, a Teams message to the manager, an invitation to the coffee on the start date at 11:00, then three days after the start date at 9:00, if the equipment hasn't been handed over, an email reminder. And an agent in Teams that answers from the Human Resources site, cites its sources, and refuses what is outside its remit. Two open questions: who receives the reminder, and does the buddy need a message. Does that work for you?
+
+0:06:36 Sophie Durand
+That works very well for me.
+
+0:06:38 Thomas Leroy
+Perfect.
+
+0:06:39 Karim Benali
+For me too. When do we start?
+
+0:06:42 Elliot Margot
+Soon. I'll show you a first version very quickly. Thanks, everyone.

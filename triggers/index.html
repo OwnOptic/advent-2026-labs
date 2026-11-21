@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab: Copilot Studio triggers</title>
+<meta name="description" content="Step-by-step lab: a Copilot Studio workflow wakes an agent on the Microsoft Copilot harness every time a supplier document lands in SharePoint, and the agent posts what matters in Teams. By Elliot Margot, Microsoft MVP. Power Platform Advent Calendar 2026.">
+<link rel="stylesheet" href="../assets/lab.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid"></div>
+  <div class="wrap">
+    <div class="topline">
+      <a class="brand" href="https://e-margot.ch" target="_blank" rel="noopener"><img src="../assets/elliot-margot.webp" alt="">Elliot Margot</a>
+      <button class="theme-btn" id="theme" type="button" aria-label="Switch theme">🌓 Theme</button>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <span class="kicker"><span class="dot"></span>Lab · Power Platform Advent Calendar 2026</span>
+        <h1>Copilot Studio <span class="grad">triggers</span></h1>
+        <div class="typer" aria-live="polite">Rebuild the demo at home: <b id="typer">an agent nobody has to ask</b></div>
+        <div class="cta">
+          <a class="btn primary" href="#overview">Start the lab →</a>
+          <a class="btn ghost" href="#before">Download the files</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><b data-count="60">0</b><span>minutes at most</span></div>
+          <div class="stat"><b data-count="5">0</b><span>guided steps</span></div>
+          <div class="stat"><b data-count="0">0</b><span>prompts typed by a user</span></div>
+        </div>
+      </div>
+      <div class="orbit" aria-hidden="true">
+        <div class="portrait"><div class="inner"><img src="../assets/elliot-margot.webp" alt=""></div></div>
+        <div class="chip c1"><i>📄</i>A file lands in SharePoint</div>
+        <div class="chip c2"><i>⚡</i>Copilot Studio workflow</div>
+        <div class="chip c3"><i>🧠</i>Microsoft Copilot harness</div>
+        <div class="chip c4"><i>💬</i>Posted in Teams</div>
+      </div>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,80 480,0 720,30 C960,60 1200,10 1440,40 L1440,70 L0,70 Z" fill="var(--bg)"/></svg>
+</header>
+
+<div class="bg" aria-hidden="true">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="shape s1" data-speed="0.12"><svg width="90" height="90" viewBox="0 0 90 90"><circle cx="45" cy="45" r="36" fill="none" stroke="#F26F21" stroke-width="5" opacity=".55"/></svg></div>
+  <div class="shape s2 spin" data-speed="0.22"><svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="#4f7fb3" stroke-width="4" stroke-dasharray="4 12" stroke-linecap="round" opacity=".6"/></svg></div>
+  <div class="shape s3" data-speed="0.3"><svg width="56" height="56" viewBox="0 0 56 56"><path d="M28 6v44M6 28h44" stroke="#FFB547" stroke-width="7" stroke-linecap="round" opacity=".7"/></svg></div>
+  <div class="shape s4" data-speed="0.16"><svg width="110" height="60" viewBox="0 0 110 60"><path d="M5 40 C 20 5, 35 5, 50 30 S 80 55, 105 15" fill="none" stroke="#F26F21" stroke-width="5" stroke-linecap="round" opacity=".5"/></svg></div>
+  <div class="shape s5" data-speed="0.26"><svg width="70" height="70" viewBox="0 0 70 70"><path d="M35 6 L64 58 H6 Z" fill="none" stroke="#4f7fb3" stroke-width="5" stroke-linejoin="round" opacity=".55"/></svg></div>
+  <div class="shape s6" data-speed="0.18"><svg width="44" height="44" viewBox="0 0 44 44"><path d="M22 2 L26 18 L42 22 L26 26 L22 42 L18 26 L2 22 L18 18 Z" fill="#FFB547" opacity=".75"/></svg></div>
+  <div class="shape s7 spin" data-speed="0.1"><svg width="64" height="64" viewBox="0 0 64 64"><rect x="10" y="10" width="44" height="44" rx="12" fill="none" stroke="#FFB547" stroke-width="5" opacity=".55"/></svg></div>
+  <div class="shape s8" data-speed="0.34"><svg width="80" height="24" viewBox="0 0 80 24"><g fill="#F26F21" opacity=".6"><circle cx="8" cy="12" r="6"/><circle cx="40" cy="12" r="6"/><circle cx="72" cy="12" r="6"/></g></svg></div>
+</div>
+<nav class="bar" aria-label="Lab steps">
+  <div class="scroll" id="scrollbar"></div>
+  <div class="wrap">
+    <div class="toc" id="toc"></div>
+    <div class="ring" id="ring" title="Lab progress">0 %</div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section id="overview" class="card reveal">
+  <h2>What you will build</h2>
+  <p class="lead">Contoso Procurement, a fictional team, is in the Christmas rush. Quotes and statements of work land in a SharePoint folder called <b>Incoming</b>. Today someone opens each one, reads it and forwards it, and in December the deadlines slip through: a quote that expires, a guest list that is due, a notice period before an automatic renewal. In this lab, nobody types a prompt: the file itself wakes the agent.</p>
+  <h3>One document, from SharePoint to Teams</h3>
+  <div class="story" id="story">
+    <div class="runner" id="runner"></div>
+    <div class="moment" data-i="0"><div class="ico">📄</div><b>A file lands</b><span>Someone drops a supplier document in Incoming</span></div>
+    <div class="moment" data-i="1"><div class="ico">🚦</div><b>PDF only</b><span>The workflow stops anything that is not a PDF, before it costs a credit</span></div>
+    <div class="moment" data-i="2"><div class="ico">🔎</div><b>Extract</b><span>The workflow reads the PDF and pulls out 11 fields</span></div>
+    <div class="moment" data-i="3"><div class="ico">💬</div><b>Posted in Teams</b><span>The agent writes the summary and the points to watch</span></div>
+  </div>
+  <div class="story-ctrl"><button class="mini" id="replay" type="button">▶ Replay</button><span>Click a step to see it.</span></div>
+
+  <div class="duo" style="margin-top:22px">
+    <div class="pane"><h3>🧠 The agent</h3><p><b>Contoso Procurement Watcher</b>, on the <b>Microsoft Copilot harness</b>. Short instructions, no tools, no knowledge, no web search. It gets one document and judges it: supplier, amount, dates, and at most three points to watch.</p></div>
+    <div class="pane"><h3>⚡ The workflow</h3><p><b>Supplier documents to Teams</b>, a Copilot Studio workflow (not Power Automate). A SharePoint trigger, a condition, <b>Extract</b>, an <b>Agent</b> node that calls the agent, and a Teams post.</p></div>
+  </div>
+  <div class="callout note"><b>Why not hand the PDF straight to the agent?</b> The agent node takes a message, not a file. So the workflow does the reading (Extract) and the agent does the thinking (what matters, and by when).</div>
+</section>
+
+<section id="before" class="card reveal">
+  <h2>Before you start</h2>
+  <div class="callout warn"><b>A test tenant, never production.</b> The lab creates a team, a channel, a folder, an agent and a workflow, and it posts real messages in Teams.</div>
+  <ul class="plain">
+    <li>A Microsoft 365 test tenant where you can create a team in Microsoft Teams.</li>
+    <li>A Power Platform environment with Dataverse and access to Copilot Studio, with Copilot Studio credits. One document costs about 30 credits.</li>
+    <li>PowerShell 7 and Azure CLI, the Azure command-line interface (<code>az</code>): <a href="https://learn.microsoft.com/cli/azure/install-azure-cli" target="_blank" rel="noopener">install Azure CLI</a>.</li>
+    <li>The lab files:</li>
+  </ul>
+  <div class="downloads">
+    <a href="files/christmas-supplier-documents.zip" download><span class="big">🎄</span><b>Christmas supplier documents (zip)</b><span>3 PDFs (Fabrikam, Litware, Northwind) and one text file the workflow must ignore</span></a>
+    <a href="files/watcher-instructions.txt" download><span class="big">🧭</span><b>watcher-instructions.txt</b><span>The agent's instructions, 5 rules</span></a>
+    <a href="files/create-watcher-agent.ps1" download><span class="big">⚙️</span><b>create-watcher-agent.ps1</b><span>Creates and publishes the agent on the Microsoft Copilot harness</span></a>
+  </div>
+  <div class="done-row"><label><input type="checkbox" data-step="before"><span class="switch"></span>Ready to start</label></div>
+</section>
+
+<section id="step1" class="card reveal">
+  <h2><span class="num">1</span>The team, the channel and the folder</h2>
+  <p class="time">⏱️ About 5 minutes</p>
+  <ol class="steps">
+    <li>In Microsoft Teams, create a team <b>Contoso - Procurement</b> (from scratch, private).</li>
+    <li>In that team, add a standard channel <b>Supplier documents</b>.</li>
+    <li>Open the team's SharePoint site: in the team, <b>Files</b>, then <b>Open in SharePoint</b>. Go back to the root of the <b>Documents</b> library.</li>
+    <li>In <b>Documents</b>, create a folder <b>Incoming</b>. Keep this tab open: you will drop the documents here in step 4.</li>
+    <li>Unzip the Christmas supplier documents into a folder on your computer, ready for drag and drop.</li>
+  </ol>
+  <div class="callout expect"><b>Result:</b> the team <b>Contoso - Procurement</b> with an empty channel <b>Supplier documents</b>, and an empty folder <b>Incoming</b> in the Documents library of its site (address <code>https://your-tenant.sharepoint.com/sites/contoso-procurement</code> or similar).</div>
+  <div class="callout note"><b>Plan a spare channel.</b> Posts written by the workflow (as the Flow bot) cannot be deleted by the team owner. If you want a clean run later, point the workflow at a fresh channel instead.</div>
+  <div class="done-row"><label><input type="checkbox" data-step="step1"><span class="switch"></span>Team, channel and folder ready</label></div>
+</section>
+
+<section id="step2" class="card reveal">
+  <h2><span class="num">2</span>The agent, on the Microsoft Copilot harness</h2>
+  <p class="time">⏱️ About 5 minutes</p>
+  <ol class="steps">
+    <li>Put <a href="files/watcher-instructions.txt" download><code>watcher-instructions.txt</code></a> and <a href="files/create-watcher-agent.ps1" download><code>create-watcher-agent.ps1</code></a> in the same folder.</li>
+    <li>Find your environment URL: Power Platform admin center, <b>Environments</b>, your environment, <b>Environment URL</b> (it ends with <code>.dynamics.com</code>). Find your tenant identifier: Microsoft Entra admin center, <b>Overview</b>, <b>Tenant ID</b>.</li>
+    <li>In PowerShell 7, from that folder, sign in and run the script:</li>
+  </ol>
+  <div data-snip="Agent script" data-label="In PowerShell 7 (replace the two values)"></div>
+  <div class="callout expect"><b>Result:</b> <code>CREATED</code> followed by an identifier, then <code>PUBLISHED ... status=Succeeded</code> after about 15 seconds. Run it again after editing the instructions: it updates the same agent and publishes again.</div>
+  <ol class="steps" start="4" style="counter-reset: s 3">
+    <li>Open <a href="https://copilotstudio.microsoft.com" target="_blank" rel="noopener">Copilot Studio</a>, pick your environment, <b>Agents</b>, then <b>Contoso Procurement Watcher</b>, <b>Build</b> tab. Check: the instructions are there, no tools, no knowledge, web search off.</li>
+  </ol>
+  <p>The instructions are short. Three rules carry the weight:</p>
+  <div data-snip="Agent rules" data-label="watcher-instructions.txt, rules 3 to 5"></div>
+  <div class="callout note"><b>Why simple HTML?</b> A Teams channel post is HTML, the web page format. Markdown would show up as literal asterisks, so rule 2 asks the agent for a bold title, one field per line, a numbered list for the points to watch and an "Open the document" link.</div>
+  <div class="done-row"><label><input type="checkbox" data-step="step2"><span class="switch"></span>Agent published</label></div>
+</section>
+
+<section id="step3" class="card reveal">
+  <h2><span class="num">3</span>The workflow</h2>
+  <p class="time">⏱️ About 20 minutes</p>
+  <p>In Copilot Studio, same environment: <b>Workflows</b>, <b>New workflow</b>. Name it <b>Supplier documents to Teams</b>. Then add the nodes in this order.</p>
+  <ol class="steps">
+    <li><b>Trigger: SharePoint, "When a file is created (properties only)".</b> Site Address: your Contoso - Procurement site. Library Name: <b>Documents</b>. Folder: <code>/Shared Documents/Incoming</code>.</li>
+    <li><b>Condition (If/Else):</b> <b>File name with extension</b> (from the trigger) <b>ends with</b> <code>.pdf</code>. Put every following node in the branch where the condition is true. The other branch stays empty: the run stops there.</li>
+    <li><b>SharePoint, "Get file content".</b> Site Address: the same site. File Identifier: <b>Identifier</b> from the trigger.</li>
+    <li><b>Extract.</b> Give it the <b>File Content</b> from "Get file content" as the document to read, and define these 11 output fields, all text: <code>Supplier</code>, <code>DocumentType</code>, <code>Reference</code>, <code>Amount</code>, <code>Term</code>, <code>Validity</code>, <code>Deadlines</code>, <code>Liability</code>, <code>PersonalData</code>, <code>RenewalAndNotice</code>, <code>OtherClauses</code>.</li>
+    <li><b>Agent.</b> Choose <b>Contoso Procurement Watcher</b>. In <b>Message</b>, paste the text below, then replace each value in braces with the dynamic value of the same name (from the trigger, or from Extract).</li>
+  </ol>
+  <div data-snip="Agent message" data-label="Agent node, Message"></div>
+  <ol class="steps" start="6" style="counter-reset: s 5">
+    <li><b>Microsoft Teams, "Post message in a chat or channel".</b> Post as: <b>Flow bot</b>. Post in: <b>Channel</b>. Team: <b>Contoso - Procurement</b>. Channel: <b>Supplier documents</b>. Message: the agent's answer (the <b>result</b> output of the Agent node).</li>
+    <li><b>Save</b>, <b>Publish</b>, and make sure the workflow is <b>on</b>. The editor may still show a "Draft" badge although the workflow is on: trust the workflow list.</li>
+  </ol>
+  <div class="callout warn"><b>Pick "properties only".</b> The trigger "When a file is created in a folder" is marked deprecated. "When a file is created (properties only)" passes the file's metadata, not its text: that is why "Get file content" and Extract come next. Without them, the agent has nothing to read.</div>
+  <div class="callout expect"><b>Result:</b> six nodes in one line: trigger, condition, Get file content, Extract, Agent, Post message. The workflow is published and on.</div>
+  <div class="done-row"><label><input type="checkbox" data-step="step3"><span class="switch"></span>Workflow published and on</label></div>
+</section>
+
+<section id="step4" class="card reveal">
+  <h2><span class="num">4</span>Drop the documents, one at a time</h2>
+  <p class="time">⏱️ About 10 minutes</p>
+  <div class="callout warn"><b>One file at a time.</b> Files dropped at the same moment arrive in one trigger run. Drop a file, wait for its post in Teams, then drop the next one.</div>
+  <p>Open the <b>Supplier documents</b> channel next to the <b>Incoming</b> folder. The trigger checks the folder about every minute; a run took 38 to 45 seconds in rehearsal. Expect the post one to two minutes after the drop.</p>
+  <ol class="steps">
+    <li><b>Meeting notes - Christmas market planning.txt.</b> Nothing appears in Teams. Not a PDF: the run stopped at the condition and the agent never woke up. You can see that run, short, in the workflow's <b>Activity</b>.</li>
+    <li><b>Fabrikam - Quote Q-2026-118 Christmas lights.pdf.</b> Expected: Fabrikam Festive Lights, a quote for 400 metres of garlands, 12 illuminated reindeer and a 4 metre tree for the Christmas market stand, EUR 18,600. Point to watch: the price is <b>valid only until 4 December 2026</b>, and installation is on 5 December.</li>
+    <li><b>Litware - Statement of work staff Christmas party.pdf.</b> Expected: Litware Events, reference LW-SOW-2026-77, EUR 27,000 fixed price for 220 guests on 18 December 2026. Points to watch: a <b>data processing agreement before 1 December</b> (the guest list holds names, emails and dietary requirements), <b>final numbers by 4 December</b> or a 50 percent cancellation cost, and liability capped at the contract amount.</li>
+    <li><b>Northwind - Framework agreement 2027 gift wrapping.pdf.</b> Expected: EUR 48,600 a year for 2027, prices up 4.5 percent, and it <b>renews automatically unless notice is given before 2 October 2027</b>.</li>
+  </ol>
+  <div class="callout expect"><b>Result:</b> three posts in Supplier documents, each with a bold title, one field per line, a numbered list of points to watch with their dates, and an "Open the document" link. No post for the text file.</div>
+  <div class="callout note"><b>The agent wrote "not stated"?</b> That is rule 3 at work: it refuses to guess. Check in the run that Extract returned values. In the first version of this demo, the workflow passed only the file's properties, and the agent answered "PDF contents unavailable, amount not stated" instead of inventing a figure.</div>
+  <div class="done-row"><label><input type="checkbox" data-step="step4"><span class="switch"></span>Three posts in Teams</label></div>
+</section>
+
+<section id="step5" class="card reveal">
+  <h2><span class="num">5</span>Inside one run, and a schedule</h2>
+  <p class="time">⏱️ About 10 minutes</p>
+  <ol class="steps">
+    <li>In the workflow, open <b>Activity</b> and open the Litware run. Each node is green.</li>
+    <li>Click <b>Extract</b>: the fields it pulled from the PDF. Then click <b>Agent</b>: the message it received and the answer it wrote. The fields are facts; the points to watch are the agent's judgement.</li>
+    <li>Look at the cost: about 30 credits per document in rehearsal, about 24 for Extract and 6 for the agent. Measure it before you point the workflow at a folder that gets a hundred files a day.</li>
+    <li>Optional: save a copy of the workflow and replace the trigger with <b>Recurrence</b>, every morning at 8:00. The same pattern becomes a daily digest. Event and schedule are the two kinds of trigger you will use most.</li>
+  </ol>
+  <div class="done-row"><label><input type="checkbox" data-step="step5"><span class="switch"></span>Run inspected</label></div>
+</section>
+
+<section id="remember" class="card reveal">
+  <h2>Before you turn on a proactive agent: 4 controls</h2>
+  <p class="lead">A proactive agent spends credits on every run and can post in the wrong place. Nobody is there to catch it, so build the guardrails in.</p>
+  <ol class="steps">
+    <li><b>Scope the trigger.</b> One folder, not the whole site. Ideally a library for the agent, not the one everybody writes to.</li>
+    <li><b>Filter before the agent runs.</b> Only PDFs reach the agent. A file it should ignore should never wake it.</li>
+    <li><b>Read, never act.</b> The agent summarises. It does not approve, sign, reply to the supplier, or move or delete the file.</li>
+    <li><b>Watch it run.</b> The workflow's Activity lists every triggered run: check it daily for the first week.</li>
+  </ol>
+  <h3>Lessons from building it</h3>
+  <ul class="plain">
+    <li>"When a file is created (properties only)" passes metadata only: read the file in the workflow before the agent runs.</li>
+    <li>Files dropped together arrive in one run: test one file at a time.</li>
+    <li>The condition on <code>.pdf</code> keeps text files and images away from the agent, at zero credit.</li>
+    <li>Teams channel posts are HTML: ask the agent for simple HTML, never Markdown.</li>
+    <li>Flow bot posts cannot be deleted: use a fresh channel for each clean run.</li>
+    <li>About 30 credits per document, and 38 to 45 seconds per run.</li>
+  </ul>
+  <div class="done-row"><label><input type="checkbox" data-step="remember"><span class="switch"></span>Got it</label></div>
+</section>
+
+<section id="cleanup" class="card reveal">
+  <h2>Clean up</h2>
+  <ol class="steps">
+    <li>Turn off the workflow <b>Supplier documents to Teams</b> (or delete it) in Copilot Studio, <b>Workflows</b>.</li>
+    <li>Delete the files you dropped in <b>Incoming</b>.</li>
+    <li>Delete the agent <b>Contoso Procurement Watcher</b> in Copilot Studio if you no longer need it.</li>
+    <li>Delete the team <b>Contoso - Procurement</b> when you are done: it removes the channel and the site with it.</li>
+  </ol>
+  <div class="done-row"><label><input type="checkbox" data-step="cleanup"><span class="switch"></span>All cleaned up</label></div>
+</section>
+
+<section id="links" class="card reveal">
+  <h2>Go further</h2>
+  <ul class="plain">
+    <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/" target="_blank" rel="noopener">Copilot Studio documentation</a></li>
+    <li><a href="https://learn.microsoft.com/connectors/sharepointonline/" target="_blank" rel="noopener">SharePoint connector reference</a></li>
+    <li><a href="https://learn.microsoft.com/connectors/teams/" target="_blank" rel="noopener">Microsoft Teams connector reference</a></li>
+    <li><a href="https://learn.microsoft.com/power-apps/developer/data-platform/webapi/overview" target="_blank" rel="noopener">Dataverse Web API</a></li>
+  </ul>
+</section>
+
+<section id="author" class="card author reveal">
+  <div class="pic"><img src="../assets/elliot-margot.webp" alt="Elliot Margot" loading="lazy"></div>
+  <div>
+    <h2>Who built this lab?</h2>
+    <div class="role">Elliot Margot · Microsoft MVP (Most Valuable Professional) for Microsoft 365 Copilot and Copilot Studio <img src="../assets/mvp-badge.png" alt="Microsoft MVP badge" style="height:22px;vertical-align:middle;margin-left:6px"></div>
+    <p>Based in Lausanne, Elliot builds agents with Copilot Studio and Microsoft 365 Copilot, and he would rather show them live than on slides. This lab follows his "Copilot Studio triggers" video for the Power Platform Advent Calendar 2026.</p>
+    <p>Every week he publishes <b>Agentic Weekly</b>, a short newsletter on what actually changes in the world of agents.</p>
+    <div class="links">
+      <a href="https://www.linkedin.com/in/elliot-margot-52742a156/" target="_blank" rel="noopener">💼 LinkedIn</a>
+      <a href="https://e-margot.ch" target="_blank" rel="noopener">🌐 e-margot.ch</a>
+      <a href="https://e-margot.ch/community/newsletter" target="_blank" rel="noopener">📰 Agentic Weekly</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>Lab for the video "Copilot Studio triggers", Power Platform Advent Calendar 2026.<br>Contoso, Fabrikam, Litware and Northwind are fictional companies; the lab documents are samples. Made with ☕ in Lausanne by Elliot Margot.</footer>
+
+<div class="toast" id="toast" role="status"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+const TEXTS = {
+"Agent script": "az login --tenant YOUR_TENANT_ID\n./create-watcher-agent.ps1 -EnvironmentUrl https://yourorg.crm.dynamics.com -TenantId YOUR_TENANT_ID",
+"Agent rules": "3. If a field is not in the document, write \"not stated\". Never guess an amount or a date.\n4. Write plainly. Never use the long dash character; use a colon or a comma instead. Do not comment on the document itself, for example whether it is a sample or fictional.\n5. You only summarise. Never approve, sign, reply to the supplier, or move or delete the file.",
+"Agent message": "A new supplier document has landed in Incoming. File name: {File name with extension}. Link: {Link to item}. Extracted content:\nSupplier: {Supplier}\nDocument type: {DocumentType}\nReference: {Reference}\nAmount: {Amount}\nTerm: {Term}\nValidity: {Validity}\nDeadlines: {Deadlines}\nLiability: {Liability}\nPersonal data: {PersonalData}\nRenewal and notice: {RenewalAndNotice}\nOther clauses: {OtherClauses}\nSummarise it following your instructions."
+};
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+const toastEl = document.getElementById('toast');
+let toastT;
+function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2600); }
+
+// Theme
+const themeBtn = document.getElementById('theme');
+const savedTheme = store.get('advent-lab-theme'); if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+themeBtn.addEventListener('click', () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const next = dark ? 'light' : 'dark'; document.documentElement.dataset.theme = next; store.set('advent-lab-theme', next);
+});
+
+// Typewriter
+const phrases = ['an agent nobody has to ask', 'a file that wakes a workflow', 'an Extract step that reads the PDF', 'a summary posted in Teams', 'an agent that refuses to guess'];
+const typer = document.getElementById('typer');
+if (!reduce) {
+  let p = 0, i = phrases[0].length, del = true;
+  setTimeout(function step() {
+    if (del) { i--; if (i <= 0) { del = false; p = (p + 1) % phrases.length; } }
+    else { i++; if (i >= phrases[p].length) { del = true; typer.textContent = phrases[p]; return setTimeout(step, 1900); } }
+    typer.textContent = phrases[p].slice(0, Math.max(i, 0)) || ' ';
+    setTimeout(step, del ? 28 : 55);
+  }, 2200);
+}
+
+// Counters
+document.querySelectorAll('[data-count]').forEach(el => { const end = +el.dataset.count; if (reduce || !end) { el.textContent = end; return; } let t0; const dur = 1200;
+  requestAnimationFrame(function f(t) { t0 = t0 || t; const k = Math.min((t - t0) / dur, 1); el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); }); });
+
+// Snippets with a copy button
+document.querySelectorAll('[data-snip]').forEach(el => {
+  const text = (TEXTS[el.dataset.snip] || '').trim();
+  el.className = 'snip';
+  el.innerHTML = '<div class="head"><span><span class="dots"><i></i><i></i><i></i></span><b></b></span><button class="copy" type="button">Copy</button></div><pre></pre>';
+  el.querySelector('b').textContent = el.dataset.label;
+  el.querySelector('pre').textContent = text;
+  el.querySelector('button').addEventListener('click', async (e) => {
+    const b = e.currentTarget;
+    try { await navigator.clipboard.writeText(text); }
+    catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+    b.classList.add('ok'); b.textContent = 'Copied ✓'; toast('Copied to the clipboard');
+    setTimeout(() => { b.classList.remove('ok'); b.textContent = 'Copy'; }, 1500);
+  });
+});
+
+// Reveal on scroll
+const sections = [...document.querySelectorAll('main > section')];
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Table of contents and progress
+const toc = document.getElementById('toc');
+const boxes = [...document.querySelectorAll('input[data-step]')];
+const labels = { overview: 'Overview', before: 'Before you start', step1: '1. Team', step2: '2. Agent', step3: '3. Workflow', step4: '4. Drop', step5: '5. Inside a run', remember: '4 controls', cleanup: 'Clean up', links: 'Go further', author: 'The author' };
+sections.forEach(sec => { const a = document.createElement('a'); a.href = '#' + sec.id; a.textContent = labels[sec.id] || sec.id; a.id = 'toc-' + sec.id; toc.appendChild(a); });
+const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { toc.querySelectorAll('a').forEach(a => a.classList.remove('active')); const a = document.getElementById('toc-' + e.target.id); if (a) { a.classList.add('active'); a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' }); } } }), { rootMargin: '-45% 0px -50% 0px' });
+sections.forEach(s => spy.observe(s));
+const bar = document.getElementById('scrollbar');
+addEventListener('scroll', () => { const h = document.documentElement; bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%'; }, { passive: true });
+
+const ring = document.getElementById('ring');
+function progress(celebrate) {
+  const done = boxes.filter(b => b.checked).length, pct = Math.round(done / boxes.length * 100);
+  ring.style.setProperty('--p', pct); ring.textContent = pct + ' %';
+  if (celebrate && done === boxes.length) { confetti(260); toast('🎉 Lab complete! Contoso Procurement can relax this Christmas.'); }
+}
+boxes.forEach(cb => {
+  const key = 'advent-lab-triggers-' + cb.dataset.step;
+  cb.checked = store.get(key) === '1';
+  const mark = () => { const a = document.getElementById('toc-' + cb.dataset.step); if (a) a.classList.toggle('done', cb.checked); };
+  mark();
+  cb.addEventListener('change', () => { store.set(key, cb.checked ? '1' : '0'); mark(); if (cb.checked) { confetti(70, cb); } progress(cb.checked); });
+});
+progress(false);
+
+// One document, step by step
+const moments = [...document.querySelectorAll('.moment')];
+const runner = document.getElementById('runner');
+let storyTimer;
+function showMoment(i) { moments.forEach((m, j) => m.classList.toggle('on', j === i)); const m = moments[i]; runner.style.left = (m.offsetLeft + m.offsetWidth / 2 - 40) + 'px'; }
+function playStory() { clearTimeout(storyTimer); let i = 0; (function next() { showMoment(i); i++; if (i < moments.length) storyTimer = setTimeout(next, 1300); })(); }
+moments.forEach((m, i) => m.addEventListener('click', () => { clearTimeout(storyTimer); showMoment(i); }));
+document.getElementById('replay').addEventListener('click', playStory);
+new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { reduce ? showMoment(3) : playStory(); o.disconnect(); } }), { threshold: .5 }).observe(document.getElementById('story'));
+
+// Parallax on the background shapes
+const shapesEls = [...document.querySelectorAll('.bg .shape')];
+if (!reduce && shapesEls.length) {
+  let ticking = false;
+  addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => {
+    const y = scrollY; shapesEls.forEach((el, i) => { const k = +el.dataset.speed; el.style.transform = 'translate(' + (Math.cos(y * k / 260 + i) * 24).toFixed(1) + 'px,' + (Math.sin(y * k / 160 + i) * 70).toFixed(1) + 'px)'; }); ticking = false; }); }, { passive: true });
+}
+// Confetti
+const cv = document.getElementById('confetti'), cx = cv.getContext('2d');
+let parts = [], raf;
+function size() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+size(); addEventListener('resize', size);
+function confetti(n, el) {
+  if (reduce) return;
+  const r = el ? el.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 3, width: 0, height: 0 };
+  const x0 = (r.left + r.width / 2) * devicePixelRatio, y0 = (r.top + r.height / 2) * devicePixelRatio;
+  const cols = ['#F26F21', '#FFB547', '#2A3B4E', '#2bb3a3', '#ffffff', '#3b5f86'];
+  for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, v = (4 + Math.random() * 9) * devicePixelRatio;
+    parts.push({ x: x0, y: y0, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 6 * devicePixelRatio, s: (5 + Math.random() * 6) * devicePixelRatio, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[i % cols.length], life: 0 }); }
+  if (!raf) loop();
+}
+function loop() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  parts = parts.filter(p => p.life < 140 && p.y < cv.height + 40);
+  parts.forEach(p => { p.life++; p.vy += .32 * devicePixelRatio; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.globalAlpha = Math.max(0, 1 - p.life / 140); cx.fillStyle = p.c; cx.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * .66); cx.restore(); });
+  raf = parts.length ? requestAnimationFrame(loop) : (cx.clearRect(0, 0, cv.width, cv.height), null);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab: let's vibe code a Copilot Studio agent together</title>
+<meta name="description" content="Step-by-step lab from the Power Platform Advent Calendar 2026: Claude turns a workshop transcript into a blueprint, a Copilot Studio workflow and an onboarding agent on the Microsoft Copilot harness.">
+<link rel="stylesheet" href="../assets/lab.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid"></div>
+  <div class="wrap">
+    <div class="topline">
+      <a class="brand" href="../"><img src="../assets/elliot-margot.webp" alt="">Advent Calendar 2026 labs</a>
+      <button class="theme-btn" id="theme" type="button" aria-label="Switch theme">🌓 Theme</button>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <span class="kicker"><span class="dot"></span>Lab · Power Platform Advent Calendar 2026</span>
+        <h1>Let's <span class="grad">vibe code</span> a Copilot Studio agent together</h1>
+        <div class="typer" aria-live="polite">Rebuild the demo at home: <b id="typer">a workshop transcript becomes a blueprint</b></div>
+        <div class="cta">
+          <a class="btn primary" href="#overview">Start the lab →</a>
+          <a class="btn ghost" href="#before">Download the files</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><b data-count="90">0</b><span>minutes at most</span></div>
+          <div class="stat"><b data-count="3">0</b><span>prompts to Claude</span></div>
+          <div class="stat"><b data-count="0">0</b><span>lines of code by hand</span></div>
+        </div>
+      </div>
+      <div class="orbit" aria-hidden="true">
+        <div class="portrait"><div class="inner"><img src="../assets/elliot-margot.webp" alt=""></div></div>
+        <div class="chip c1"><i>✦</i>Claude</div>
+        <div class="chip c2"><i>⚡</i>Copilot Studio workflow</div>
+        <div class="chip c3"><i>📚</i>Agent that cites its sources</div>
+        <div class="chip c4"><i>💬</i>Published in Teams</div>
+      </div>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,80 480,0 720,30 C960,60 1200,10 1440,40 L1440,70 L0,70 Z" fill="var(--bg)"/></svg>
+</header>
+
+<nav class="bar" aria-label="Lab steps">
+  <div class="scroll" id="scrollbar"></div>
+  <div class="wrap">
+    <div class="toc" id="toc"></div>
+    <div class="ring" id="ring" title="Lab progress">0 %</div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section id="overview" class="card reveal">
+  <h2>What you will build</h2>
+  <p class="lead">Camille starts at Contoso, a fictitious company, on Monday. Before anyone writes a line of code, the team held a 38-minute workshop on Teams. You give its transcript to Claude, and Claude does the rest: a blueprint, a workflow that welcomes Camille, and an agent that answers her questions.</p>
+  <h3>Camille's journey</h3>
+  <div class="story" id="story">
+    <div class="runner" id="runner"></div>
+    <div class="moment" data-i="0"><div class="ico">✉️</div><b>Welcome</b><span>An email with the programme of her first week</span></div>
+    <div class="moment" data-i="1"><div class="ico">👋</div><b>Manager told</b><span>A Teams message with the job title and the start date</span></div>
+    <div class="moment" data-i="2"><div class="ico">☕</div><b>Welcome coffee</b><span>On her start date at 11:00 with her buddy</span></div>
+    <div class="moment" data-i="3"><div class="ico">💻</div><b>3 days later</b><span>Equipment still missing? The manager gets a reminder</span></div>
+  </div>
+  <div class="story-ctrl"><button class="mini" id="replay" type="button">▶ Replay the journey</button><span>Click a step to see it.</span></div>
+
+  <div class="duo" style="margin-top:22px">
+    <div class="pane"><h3>📐 The blueprint</h3><p>Claude reads the transcript and writes a functional and technical blueprint, with two diagrams. Every requirement cites the moment of the workshop it came from, and the two questions the team left open are flagged, not guessed.</p></div>
+    <div class="pane"><h3>⚡ The workflow</h3><p>Claude writes it, saves it in Dataverse with Azure command-line interface (Azure CLI) and turns it on. It opens in the new Copilot Studio editor, Workflows page.</p></div>
+  </div>
+  <div class="duo">
+    <div class="pane"><h3>📚 The agent</h3><p>Claude creates and publishes the <b>Contoso Onboarding Assistant</b> on the Microsoft Copilot harness: instructions, the Human Resources site as its only source, no web search.</p></div>
+    <div class="pane"><h3>✅ You</h3><p>You paste three prompts, decide two business questions, test, evaluate and publish to Teams. Nothing else to copy anywhere.</p></div>
+  </div>
+</section>
+
+<section id="before" class="card reveal">
+  <h2>Before you start</h2>
+  <div class="callout warn"><b>A test tenant, never production.</b> The lab sends real emails, Teams messages and invitations, and creates a site, a list, a workflow and an agent.</div>
+  <ul class="plain">
+    <li>A Microsoft 365 test tenant with SharePoint, Outlook and Teams, and an account that can create a site.</li>
+    <li>A Power Platform environment with Dataverse and Copilot credits allocated: that is what shows the new Copilot Studio experience (workflows and agents on the Microsoft Copilot harness).</li>
+    <li>Azure CLI installed (the <code>az</code> command): <a href="https://learn.microsoft.com/cli/azure/install-azure-cli" target="_blank" rel="noopener">install Azure CLI</a>.</li>
+    <li>PowerShell 7 (the <code>pwsh</code> command): <a href="https://learn.microsoft.com/powershell/scripting/install/installing-powershell-on-windows" target="_blank" rel="noopener">install PowerShell 7</a>.</li>
+    <li>Claude Code: in the Claude desktop app (<b>Code</b> tab) or on the command line (<code>claude</code>), with a paid Claude plan or an Anthropic Console account.</li>
+    <li>The lab files:</li>
+  </ul>
+  <div class="downloads">
+    <a href="files/contoso-hr-documents.zip" download><span class="big">🗂️</span><b>Contoso documents (zip)</b><span>5 Human Resources documents and the 2021 archive of the trap</span></a>
+    <a href="files/sharepoint-setup.ps1" download><span class="big">⚙️</span><b>sharepoint-setup.ps1</b><span>Creates the site, the "New starters" list and uploads the documents</span></a>
+    <a href="files/onboarding-lab-starter.zip" download><span class="big">📦</span><b>Starter folder (zip)</b><span>The workshop transcript and the blueprint template, in the right folders</span></a>
+    <a href="files/CLAUDE.md" download><span class="big">🧭</span><b>CLAUDE.md</b><span>The context for Claude (5 values to fill in, done for you in step 2)</span></a>
+    <a href="files/test-set-onboarding.csv" download><span class="big">🎯</span><b>test-set-onboarding.csv</b><span>The 10 evaluation questions for the agent</span></a>
+  </div>
+  <p>Want to read before you build? <a href="files/workshop-transcript.txt" target="_blank" rel="noopener">The workshop transcript</a> and <a href="files/blueprint-template.html" target="_blank" rel="noopener">the blueprint template</a> open in your browser.</p>
+  <div class="done-row"><label><input type="checkbox" data-step="before"><span class="switch"></span>Ready to start</label></div>
+</section>
+
+<section id="step1" class="card reveal">
+  <h2><span class="num">1</span>Prepare SharePoint</h2>
+  <p class="time">⏱️ About 5 minutes</p>
+  <ol class="steps">
+    <li>Download the <a href="files/contoso-hr-documents.zip" download>documents zip</a> and the <a href="files/sharepoint-setup.ps1" download><code>sharepoint-setup.ps1</code></a> script into the same folder.</li>
+    <li>Once, if the module is missing: <code>Install-Module Microsoft.Graph.Authentication -Scope CurrentUser</code>.</li>
+    <li>Run the script in PowerShell 7, from that folder, with the SharePoint host of your test tenant. A sign-in window opens: sign in with your test account and accept the permissions.</li>
+  </ol>
+  <div data-snip="SharePoint script" data-label="In PowerShell 7 (replace the host)"></div>
+  <div class="callout expect"><b>Result:</b> the <b>Contoso - Human Resources</b> site (<code>/sites/contoso-hr</code>), its <b>New starters</b> list with two past new starters, the 5 documents in the <b>Documents</b> library, and <code>remote-work-policy-2021.pdf</code> in the <b>Archives</b> folder. That old policy is the trap of step 5: keep it. Open the list to check.</div>
+  <div class="callout note"><b>You can run the script again safely:</b> it reuses what already exists. Two reasons to run it again: the site was not ready yet (creating it takes one to three minutes), or the two new starters have no manager because your account was not known to the site yet (open the site once, then run it again). Already have a site? Add <code>-SiteUrl https://your-tenant.sharepoint.com/sites/your-site</code>.</div>
+  <p>The columns the script creates, and their internal name, the one the workflow uses:</p>
+  <table>
+    <tr><th>Displayed name</th><th>Internal name</th><th>Type</th></tr>
+    <tr><td>Full name</td><td><code>Title</code></td><td>Single line of text</td></tr>
+    <tr><td>Email</td><td><code>Email</code></td><td>Single line of text</td></tr>
+    <tr><td>Job title</td><td><code>JobTitle</code></td><td>Single line of text</td></tr>
+    <tr><td>Start date</td><td><code>StartDate</code></td><td>Date only</td></tr>
+    <tr><td>Manager</td><td><code>Manager</code></td><td>Person</td></tr>
+    <tr><td>Buddy</td><td><code>Buddy</code></td><td>Person</td></tr>
+    <tr><td>Equipment handed over</td><td><code>EquipmentHandedOver</code></td><td>Choice: No, Yes (No by default)</td></tr>
+  </table>
+  <div class="callout note"><b>By hand instead of the script?</b> Create each column first with its internal name, then rename it to its displayed name: SharePoint keeps the first name as the internal name. A column created directly as "Equipment handed over" would get an unreadable internal name and the workflow would fail.</div>
+  <div class="done-row"><label><input type="checkbox" data-step="step1"><span class="switch"></span>Site, documents and list ready</label></div>
+</section>
+
+<section id="step2" class="card reveal">
+  <h2><span class="num">2</span>Prepare the environment and note 5 values</h2>
+  <p class="time">⏱️ About 10 minutes</p>
+  <ol class="steps">
+    <li>In Power Automate, test environment, <b>Connections</b> menu: create a <b>SharePoint</b>, an <b>Office 365 Outlook</b> and a <b>Microsoft Teams</b> connection, with your account. Creating them now avoids any consent window later. Claude creates the three Dataverse <b>connection references</b> that point to them by itself: that is how a Copilot Studio workflow uses a connection.</li>
+    <li>Note the 5 values below.</li>
+  </ol>
+  <table>
+    <tr><th>In the file</th><th>Where to find it</th></tr>
+    <tr><td><code>YOUR_TENANT_ID</code></td><td>Tenant identifier: <code>az login</code> then <code>az account show --query tenantId -o tsv</code></td></tr>
+    <tr><td><code>YOUR_ENVIRONMENT_ID</code></td><td>In the Power Automate or Copilot Studio address, after <code>/environments/</code></td></tr>
+    <tr><td><code>YOUR_DATAVERSE_URL</code></td><td>Power Platform admin center, Environments, your environment: "Environment URL", for example <code>https://your-env.crm.dynamics.com</code> (no trailing slash)</td></tr>
+    <tr><td><code>YOUR_SITE_URL</code></td><td>The site address, for example <code>https://your-tenant.sharepoint.com/sites/contoso-hr</code></td></tr>
+    <tr><td><code>YOUR_LIST_ID</code></td><td>New starters list, List settings: the address contains <code>List=%7B…%7D</code>, the identifier is between the braces (without <code>%7B</code> and <code>%7D</code>)</td></tr>
+  </table>
+
+  <div class="perso" id="perso">
+    <h3>✨ Your context file, ready to use</h3>
+    <p>Paste your 5 values: the page fills them into <code>CLAUDE.md</code> and downloads it. No find-and-replace by hand.</p>
+    <div class="fields">
+      <div class="field" data-k="YOUR_TENANT_ID" data-type="guid"><label>Tenant identifier <code>YOUR_TENANT_ID</code></label><input placeholder="00000000-0000-0000-0000-000000000000" autocomplete="off" spellcheck="false"><small>A 36-character identifier.</small></div>
+      <div class="field" data-k="YOUR_ENVIRONMENT_ID" data-type="guid"><label>Environment identifier <code>YOUR_ENVIRONMENT_ID</code></label><input placeholder="00000000-0000-0000-0000-000000000000" autocomplete="off" spellcheck="false"><small>After <code>/environments/</code> in the address.</small></div>
+      <div class="field" data-k="YOUR_DATAVERSE_URL" data-type="dv"><label>Environment URL <code>YOUR_DATAVERSE_URL</code></label><input placeholder="https://your-env.crm.dynamics.com" autocomplete="off" spellcheck="false"><small>Ends with <code>.dynamics.com</code>, no trailing slash.</small></div>
+      <div class="field" data-k="YOUR_SITE_URL" data-type="sp"><label>Site address <code>YOUR_SITE_URL</code></label><input placeholder="https://your-tenant.sharepoint.com/sites/contoso-hr" autocomplete="off" spellcheck="false"><small>The address of the Contoso - Human Resources site.</small></div>
+      <div class="field" data-k="YOUR_LIST_ID" data-type="guid"><label>List identifier <code>YOUR_LIST_ID</code></label><input placeholder="00000000-0000-0000-0000-000000000000" autocomplete="off" spellcheck="false"><small>Between <code>%7B</code> and <code>%7D</code> in the list settings address.</small></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="gen" type="button">Download my CLAUDE.md</button>
+      <span class="privacy">🔒 Everything stays in your browser: nothing is sent anywhere.</span>
+    </div>
+  </div>
+  <div class="done-row"><label><input type="checkbox" data-step="step2"><span class="switch"></span>Connections created, file filled in</label></div>
+</section>
+
+<section id="step3" class="card reveal">
+  <h2><span class="num">3</span>From the workshop to the blueprint</h2>
+  <p class="time">⏱️ About 10 minutes, a few of them with Claude working on its own</p>
+  <ol class="steps">
+    <li>Unzip the <a href="files/onboarding-lab-starter.zip" download>starter folder</a> to a new folder, for example <code>C:\lab-onboarding</code>. It contains <code>workshop-transcript.txt</code> and <code>templates\blueprint-template.html</code>.</li>
+    <li>Put your <code>CLAUDE.md</code> from step 2 at the root of that folder. Claude Code reads it at the start of every session.</li>
+    <li>Open a terminal and sign in: <code>az login --tenant YOUR_TENANT_ID</code>.</li>
+    <li>Open a <b>new session</b> of Claude Code on that folder: in the Claude desktop app, <b>Code</b> tab, choose the folder; or in a terminal, <code>cd C:\lab-onboarding</code> then <code>claude</code>.</li>
+    <li>Paste this prompt and send it:</li>
+  </ol>
+  <div data-snip="Prompt 1" data-label="Prompt 1: from the workshop to the blueprint"></div>
+  <div class="callout expect"><b>What should happen:</b> Claude reads the 38 minutes of transcript, copies the template to <code>blueprint\onboarding-blueprint.html</code>, fills every zone, draws the journey and the architecture, and opens the page. Scroll it: the pain points, the requirements with their timestamps, the two diagrams, and two <b>open questions</b> in their own blocks. The team did not decide who gets the equipment reminder, nor whether the buddy needs a message: Claude flags them instead of guessing.</div>
+  <div class="callout note"><b>Why a blueprint first?</b> It is the contract between the business and the build. Anyone in the workshop can check any line against what was actually said, and the build in step 4 only follows the blueprint.</div>
+  <div class="done-row"><label><input type="checkbox" data-step="step3"><span class="switch"></span>Blueprint written and read</label></div>
+</section>
+
+<section id="step4" class="card reveal">
+  <h2><span class="num">4</span>Decide, then build the workflow</h2>
+  <p class="time">⏱️ About 15 minutes</p>
+  <ol class="steps">
+    <li>In the same session, answer the two open questions and ask for the workflow:</li>
+  </ol>
+  <div data-snip="Prompt 2" data-label="Prompt 2: decide, then build"></div>
+  <div class="callout expect"><b>What should happen:</b> Claude turns the two open blocks into decided blocks, shows the workflow steps, creates the connection references, writes <code>flow\create-workflow.ps1</code> (the definition and the editor graph), saves the workflow in Dataverse, turns it on and gives you the link. It opens in the <b>new editor</b> of Copilot Studio, <b>Workflows</b> page. The editor badge may say "Draft" even though the workflow is on.</div>
+  <div class="callout note"><b>Why Dataverse?</b> A Copilot Studio workflow is a row of the Dataverse <code>workflows</code> table. It holds two views of the same workflow: the definition that runs and the graph the editor draws. Without the graph, the workflow runs but the editor cannot show it; <code>CLAUDE.md</code> gives Claude the exact rules.</div>
+  <h3>Test</h3>
+  <ol class="steps">
+    <li>Add a row to the list: Camille Martin, the email of a test account, a <b>start date in the past</b> (the 3-day wait is then already over), Equipment handed over: No.</li>
+    <li>The trigger polls every minute. Tell Claude the row is added: it follows the run and summarises each action.</li>
+  </ol>
+  <div class="callout expect"><b>Result:</b> the welcome email, the Teams message to the manager (sent by the Flow bot), the "Welcome coffee" invitation, then the equipment reminder. In Copilot Studio, the workflow's <b>Activity</b> tab shows each step in green: 7 of 7.</div>
+  <div class="callout warn"><b>If Claude hesitates or wants to search the web</b>: remind it that everything is in <code>CLAUDE.md</code>. <b>If a session read an older version of the file</b>, open a new one: a session sticks to what it read.</div>
+  <p>Did you know? A workflow run lasts at most 30 days. For a real onboarding, split it in two: the immediate welcome, and a daily reminder.</p>
+  <div class="done-row"><label><input type="checkbox" data-step="step4"><span class="switch"></span>Workflow created and tested</label></div>
+</section>
+
+<section id="step5" class="card reveal">
+  <h2><span class="num">5</span>The agent, on the Microsoft Copilot harness</h2>
+  <p class="time">⏱️ About 10 minutes</p>
+  <ol class="steps">
+    <li>Still in the same session, ask for the agent:</li>
+  </ol>
+  <div data-snip="Prompt 3" data-label="Prompt 3: the agent"></div>
+  <div class="callout expect"><b>What should happen:</b> Claude writes <code>agent\instructions.txt</code> and <code>agent\create-agent.ps1</code>, creates the <b>Contoso Onboarding Assistant</b> in Dataverse, adds the Human Resources site as its only knowledge source, turns web search off, publishes it and gives you the link. About 15 seconds of publishing.</div>
+  <ol class="steps" start="2">
+    <li>Open the link. In the <b>Preview</b> pane, ask:</li>
+  </ol>
+  <div data-snip="Question 1" data-label="Question 1"></div>
+
+  <div class="quiz" id="quiz">
+    <h3>🕵️ The trap: your guess</h3>
+    <p>The site holds the 2026 remote work policy (two days) and, in the Archives folder, the 2021 one (one day). Before you read the agent's answer: which source will it cite?</p>
+    <div class="opts">
+      <button class="opt" type="button" data-right="1">Only the 2026 policy</button>
+      <button class="opt" type="button" data-right="0">The 2026 policy and the 2021 archive</button>
+      <button class="opt" type="button" data-right="0">None, it answers from memory</button>
+    </div>
+    <div class="answer"><p><b>Only the 2026 policy.</b> Two days per week, with the manager's approval, and only the 2026 policy in the sources. That is thanks to one line of its instructions: "Ignore documents in the Archives folder". Without that line, the archive shows up in the sources even when the answer is right: a dead document stays a source as long as it sits on the site. In production, the real fix is to move the archive off the site.</p></div>
+  </div>
+
+  <div data-snip="Out-of-scope question" data-label="Out-of-scope question (the agent must refuse politely)"></div>
+  <h3>Evaluate</h3>
+  <ol class="steps">
+    <li><b>Evaluate</b> tab: name "Contoso onboarding", <b>Import</b>, choose the <b>Conversations</b> type before dropping <a href="files/test-set-onboarding.csv" download><code>test-set-onboarding.csv</code></a> (comma-separated values), then run it.</li>
+  </ol>
+  <div class="callout expect"><b>Expected result:</b> about 90 percent in about 3 minutes. The question that often fails is the salary one: the "General quality" method can count a polite refusal as a non-answer. Read the answer, not only the score.</div>
+  <h3>Publish</h3>
+  <ol class="steps">
+    <li><b>Channels</b>, <b>Teams and Microsoft 365</b>, "Microsoft Copilot and Microsoft Teams" (this choice cannot change after publishing), <b>Add channel</b>, then <b>Publish</b>.</li>
+    <li>A few minutes later, open the agent in Teams ("View in Teams and Microsoft 365"; if the launch page hangs, open Teams on the web) and ask:</li>
+  </ol>
+  <div data-snip="Teams question" data-label="In Teams"></div>
+  <div class="done-row"><label><input type="checkbox" data-step="step5"><span class="switch"></span>Agent created, tested, evaluated and published</label></div>
+</section>
+
+<section id="step6" class="card reveal">
+  <h2><span class="num">6</span>Clean up</h2>
+  <p class="time">⏱️ 5 minutes. The Microsoft Copilot harness uses Copilot credits for every test and evaluation.</p>
+  <ol class="steps">
+    <li>Copilot Studio, <b>Workflows</b>: turn off, then delete the "New starter onboarding" workflow.</li>
+    <li>Copilot Studio: remove the agent from Teams, then delete it.</li>
+    <li>SharePoint: delete the test rows, or the whole site if you do not keep it.</li>
+  </ol>
+  <div class="done-row"><label><input type="checkbox" data-step="step6"><span class="switch"></span>Cleaned up</label></div>
+</section>
+
+<section id="checks" class="card reveal">
+  <h2>Before you publish an agent: 5 checks</h2>
+  <div class="checks">
+    <div>Clean sources: one version of each policy, archives excluded.</div>
+    <div>Connections created in advance, with the right account.</div>
+    <div>An evaluation set of at least 10 questions, including out-of-scope ones.</div>
+    <div>Human approval wherever a mistake is expensive.</div>
+    <div>Credit consumption measured before opening it to everyone.</div>
+  </div>
+  <h3>Go further</h3>
+  <ul class="plain">
+    <li><a href="../failures/">The next lab: agents that died in production</a></li>
+    <li><a href="../triggers/">The third lab: Copilot Studio triggers</a></li>
+    <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/" target="_blank" rel="noopener">Copilot Studio documentation</a></li>
+    <li><a href="https://learn.microsoft.com/power-apps/developer/data-platform/webapi/overview" target="_blank" rel="noopener">Dataverse Web API</a></li>
+    <li><a href="https://docs.anthropic.com/en/docs/claude-code/overview" target="_blank" rel="noopener">Claude Code documentation</a></li>
+  </ul>
+</section>
+
+<section id="author" class="card author reveal">
+  <div class="pic"><img src="../assets/elliot-margot.webp" alt="Elliot Margot" loading="lazy"></div>
+  <div>
+    <h2>Who built this lab?</h2>
+    <div class="role">Elliot Margot · Microsoft MVP (Most Valuable Professional) for Microsoft 365 Copilot and Copilot Studio</div>
+    <p>Based in Lausanne, Elliot builds agents with Copilot Studio and Microsoft 365 Copilot, and he would rather show them live than on slides. This lab follows his session "Let's vibe code a Copilot Studio agent together" in the Power Platform Advent Calendar 2026.</p>
+    <p>Every week, he publishes <b>Agentic Weekly</b>, a short newsletter on what really changes in the world of agents.</p>
+    <div class="links">
+      <a href="https://www.linkedin.com/in/elliot-margot-52742a156/" target="_blank" rel="noopener">💼 LinkedIn</a>
+      <a href="https://e-margot.ch" target="_blank" rel="noopener">🌐 e-margot.ch</a>
+      <a href="https://e-margot.ch/community/newsletter" target="_blank" rel="noopener">📰 Agentic Weekly</a>
+      <a href="https://github.com/OwnOptic" target="_blank" rel="noopener">🐙 GitHub</a>
+    </div>
+    <img class="badge" src="../assets/mvp-badge.png" alt="Microsoft Most Valuable Professional" loading="lazy">
+  </div>
+</section>
+
+</main>
+
+<footer>Lab for the session "Let's vibe code a Copilot Studio agent together", Power Platform Advent Calendar 2026.<br>Contoso is a fictitious company; the lab documents are examples. Made with ☕ in Lausanne by Elliot Margot.</footer>
+
+<div class="toast" id="toast" role="status"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+const TEXTS = {
+  "SharePoint script": "pwsh -File .\\sharepoint-setup.ps1 -SharePointHost your-tenant.sharepoint.com",
+  "Prompt 1": "Here is the transcript of the workshop \"Welcoming new starters\": ./workshop-transcript.txt\nDesign the functional and technical blueprint, with the diagrams, then open it.",
+  "Prompt 2": "Open questions: the reminder goes to the manager only, they are the one responsible. No message to the buddy, the coffee invitation is enough.\nUpdate the blueprint, then create the Copilot Studio workflow in my test environment, turn it on and give me the link to open it in Copilot Studio.",
+  "Prompt 3": "Now create the agent \"Contoso Onboarding Assistant\" on the Microsoft Copilot harness in my test environment, exactly as step 3 of your instructions says, publish it and give me the link to open it in Copilot Studio.",
+  "Question 1": "How many remote work days am I entitled to?",
+  "Out-of-scope question": "What is my manager's salary?",
+  "Teams question": "Where do I pick up my laptop?"
+};
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+const toastEl = document.getElementById('toast');
+let toastT;
+function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2600); }
+
+// Theme
+const themeBtn = document.getElementById('theme');
+const savedTheme = store.get('advent-lab-theme'); if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+themeBtn.addEventListener('click', () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const next = dark ? 'light' : 'dark'; document.documentElement.dataset.theme = next; store.set('advent-lab-theme', next);
+});
+
+// Typewriter
+const phrases = ['a workshop transcript becomes a blueprint', 'a workflow written by Claude', 'an agent that cites its sources', 'a trap to spot together', 'an evaluation on ten questions', 'a publication in Teams'];
+const typer = document.getElementById('typer');
+if (!reduce) {
+  let p = 0, i = phrases[0].length, del = true;
+  setTimeout(function step() {
+    if (del) { i--; if (i <= 0) { del = false; p = (p + 1) % phrases.length; } }
+    else { i++; if (i >= phrases[p].length) { del = true; typer.textContent = phrases[p]; return setTimeout(step, 1900); } }
+    typer.textContent = phrases[p].slice(0, Math.max(i, 0)) || '\u00a0';
+    setTimeout(step, del ? 28 : 55);
+  }, 2200);
+}
+
+// Counters
+document.querySelectorAll('[data-count]').forEach(el => { const end = +el.dataset.count; if (reduce || !end) { el.textContent = end; return; } let t0; const dur = 1200;
+  requestAnimationFrame(function f(t) { t0 = t0 || t; const k = Math.min((t - t0) / dur, 1); el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); }); });
+
+// Snippets
+document.querySelectorAll('[data-snip]').forEach(el => {
+  const text = (TEXTS[el.dataset.snip] || '').trim();
+  el.className = 'snip';
+  el.innerHTML = '<div class="head"><span><span class="dots"><i></i><i></i><i></i></span><b></b></span><button class="copy" type="button">Copy</button></div><pre></pre>';
+  el.querySelector('b').textContent = el.dataset.label;
+  el.querySelector('pre').textContent = text;
+  el.querySelector('button').addEventListener('click', async (e) => {
+    const b = e.currentTarget;
+    try { await navigator.clipboard.writeText(text); }
+    catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+    b.classList.add('ok'); b.textContent = 'Copied ✓'; toast('Copied to the clipboard');
+    setTimeout(() => { b.classList.remove('ok'); b.textContent = 'Copy'; }, 1500);
+  });
+});
+
+// Reveal on scroll
+const sections = [...document.querySelectorAll('main > section')];
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); }), { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Table of contents and progress
+const toc = document.getElementById('toc');
+const labels = { overview: 'Overview', before: 'Before you start', step1: '1. SharePoint', step2: '2. Environment', step3: '3. Blueprint', step4: '4. Workflow', step5: '5. Agent', step6: '6. Clean up', checks: '5 checks', author: 'The author' };
+sections.forEach(sec => { const a = document.createElement('a'); a.href = '#' + sec.id; a.textContent = labels[sec.id] || sec.id; a.id = 'toc-' + sec.id; toc.appendChild(a); });
+const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { toc.querySelectorAll('a').forEach(a => a.classList.remove('active')); const a = document.getElementById('toc-' + e.target.id); if (a) { a.classList.add('active'); a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' }); } } }), { rootMargin: '-45% 0px -50% 0px' });
+sections.forEach(s => spy.observe(s));
+const bar = document.getElementById('scrollbar');
+addEventListener('scroll', () => { const h = document.documentElement; bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%'; }, { passive: true });
+const ring = document.getElementById('ring');
+const boxes = [...document.querySelectorAll('input[data-step]')];
+function progress(celebrate) {
+  const done = boxes.filter(b => b.checked).length, pct = Math.round(done / boxes.length * 100);
+  ring.style.setProperty('--p', pct); ring.textContent = pct + ' %';
+  if (celebrate && done === boxes.length) { confetti(260); toast('🎉 Well done, the lab is complete! Camille is properly welcomed.'); }
+}
+boxes.forEach(cb => {
+  const key = 'advent-lab-vibe-' + cb.dataset.step;
+  cb.checked = store.get(key) === '1';
+  const mark = () => { const a = document.getElementById('toc-' + cb.dataset.step); if (a) a.classList.toggle('done', cb.checked); };
+  mark();
+  cb.addEventListener('change', () => { store.set(key, cb.checked ? '1' : '0'); mark(); if (cb.checked) confetti(70, cb); progress(cb.checked); });
+});
+progress(false);
+
+// Camille's journey
+const moments = [...document.querySelectorAll('.moment')];
+const runner = document.getElementById('runner');
+let storyTimer;
+function showMoment(i) { moments.forEach((m, j) => m.classList.toggle('on', j === i)); const m = moments[i]; runner.style.left = (m.offsetLeft + m.offsetWidth / 2 - 40) + 'px'; }
+function playStory() { clearTimeout(storyTimer); let i = 0; (function next() { showMoment(i); i++; if (i < moments.length) storyTimer = setTimeout(next, 1300); })(); }
+moments.forEach((m, i) => m.addEventListener('click', () => { clearTimeout(storyTimer); showMoment(i); }));
+document.getElementById('replay').addEventListener('click', playStory);
+new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { reduce ? showMoment(3) : playStory(); o.disconnect(); } }), { threshold: .5 }).observe(document.getElementById('story'));
+
+// Quiz
+const quiz = document.getElementById('quiz');
+quiz.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.right === '1') { b.classList.add('right'); quiz.querySelector('.answer').classList.add('open'); confetti(90, b); }
+  else { b.classList.remove('wrong'); void b.offsetWidth; b.classList.add('wrong'); toast('Not quite, try again'); }
+}));
+
+// Personalised context file
+const RX = { guid: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, dv: /^https:\/\/[a-z0-9-]+\.crm\d*\.dynamics\.com$/i, sp: /^https:\/\/[a-z0-9-]+\.sharepoint\.com\/sites\/[^\s?#]+$/i };
+const fields = [...document.querySelectorAll('.perso .field')];
+function clean(f) { let v = f.querySelector('input').value.trim(); if (f.dataset.type !== 'guid') v = v.replace(/\/+$/, ''); else v = v.replace(/^%7B|%7D$/gi, '').replace(/^\{|\}$/g, ''); return v; }
+function check(f) { const v = clean(f); f.classList.toggle('good', !!v && RX[f.dataset.type].test(v)); f.classList.toggle('bad', !!v && !RX[f.dataset.type].test(v)); return RX[f.dataset.type].test(v); }
+fields.forEach(f => { const inp = f.querySelector('input'); const k = 'advent-lab-vibe-val-' + f.dataset.k; inp.value = store.get(k) || ''; if (inp.value) check(f);
+  inp.addEventListener('input', () => { store.set(k, inp.value.trim()); check(f); }); });
+document.getElementById('gen').addEventListener('click', async () => {
+  const bad = fields.filter(f => !check(f));
+  if (bad.length) { bad.forEach(f => f.classList.add('bad')); bad[0].querySelector('input').focus(); toast('A value does not look like the expected format'); return; }
+  try {
+    let txt = await (await fetch('files/CLAUDE.md', { cache: 'no-store' })).text();
+    fields.forEach(f => { txt = txt.split(f.dataset.k).join(clean(f)); });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/markdown;charset=utf-8' })); a.download = 'CLAUDE.md'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    confetti(120, document.getElementById('gen')); toast('Your file is ready: put it at the root of your lab folder');
+  } catch { toast('Download failed: use the template file and replace the values by hand'); }
+});
+
+// Confetti
+const cv = document.getElementById('confetti'), cx = cv.getContext('2d');
+let parts = [], raf;
+function size() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+size(); addEventListener('resize', size);
+function confetti(n, el) {
+  if (reduce) return;
+  const r = el ? el.getBoundingClientRect() : { left: innerWidth / 2, top: innerHeight / 3, width: 0, height: 0 };
+  const x0 = (r.left + r.width / 2) * devicePixelRatio, y0 = (r.top + r.height / 2) * devicePixelRatio;
+  const cols = ['#F26F21', '#FFB547', '#2A3B4E', '#2bb3a3', '#ffffff', '#3b5f86'];
+  for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, v = (4 + Math.random() * 9) * devicePixelRatio;
+    parts.push({ x: x0, y: y0, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 6 * devicePixelRatio, s: (5 + Math.random() * 6) * devicePixelRatio, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: cols[i % cols.length], life: 0 }); }
+  if (!raf) loop();
+}
+function loop() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  parts = parts.filter(p => p.life < 140 && p.y < cv.height + 40);
+  parts.forEach(p => { p.life++; p.vy += .32 * devicePixelRatio; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.globalAlpha = Math.max(0, 1 - p.life / 140); cx.fillStyle = p.c; cx.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * .66); cx.restore(); });
+  raf = parts.length ? requestAnimationFrame(loop) : (cx.clearRect(0, 0, cv.width, cv.height), null);
+}
+</script>
+</body>
+</html>
