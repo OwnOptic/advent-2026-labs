@@ -24,6 +24,12 @@
   .lab .meta { font-size: .9rem; color: var(--muted); }
   .hero .lead { color: rgba(255,255,255,.86); max-width: 720px; }
   .hero .kicker { margin-top: 18px; }
+  .event { margin: 8px 0 34px; }
+  .event-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 20px; flex-wrap: wrap;
+                border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 18px; }
+  .event-head h2 { margin: 0; font-size: 1.45rem; }
+  .event-head .when { color: var(--muted); font-size: .95rem; }
+  .event .labs { margin: 0; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 </style>
 </head>
 <body>
@@ -36,37 +42,59 @@
       <button class="theme-btn" id="theme" type="button" aria-label="Switch theme">🌓 Theme</button>
     </div>
     <div>
-      <span class="kicker"><span class="dot"></span>Labs · Power Platform Advent Calendar 2026</span>
-      <h1>Three demos, three <span class="grad">labs</span></h1>
-      <p class="lead">Each lab rebuilds one Advent Calendar demo in your own test tenant, one step at a time. Pick the one you watched.</p>
+      <span class="kicker"><span class="dot"></span>Labs · Elliot Margot</span>
+      <h1>All the <span class="grad">labs</span></h1>
+      <p class="lead">Each lab rebuilds one demo in your own test tenant, one step at a time. Pick the one you watched.</p>
     </div>
   </div>
   <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,80 480,0 720,30 C960,60 1200,10 1440,40 L1440,70 L0,70 Z" fill="var(--bg)"/></svg>
 </header>
 
 <main class="wrap">
-  <section class="labs" aria-label="The three labs">
-    <a class="lab" href="vibe-coding/">
-      <span class="n">LAB 1</span>
-      <h3>🎄 Let's vibe code a Copilot Studio agent together</h3>
-      <p>Claude reads a workshop transcript, writes the blueprint, builds the onboarding workflow and publishes the agent on the Microsoft Copilot harness.</p>
-      <span class="meta">About 60 minutes · Claude · Azure command-line interface</span>
-      <span class="go">Start lab 1 →</span>
-    </a>
-    <a class="lab" href="failures/">
-      <span class="n">LAB 2</span>
-      <h3>👻 Agents that died in production</h3>
-      <p>Build an onboarding agent, meet the ghosts of agents past one by one, fix each failure, then check your list twice before you publish.</p>
-      <span class="meta">About 45 minutes · Copilot Studio · Evaluate and Monitor</span>
-      <span class="go">Start lab 2 →</span>
-    </a>
-    <a class="lab" href="triggers/">
-      <span class="n">LAB 3</span>
-      <h3>🎁 Copilot Studio triggers</h3>
-      <p>A supplier document lands in SharePoint, a workflow wakes the agent, and a summary appears in Teams before anyone opens the file.</p>
-      <span class="meta">About 45 minutes · Copilot Studio workflow · Teams</span>
-      <span class="go">Start lab 3 →</span>
-    </a>
+  <section class="event" aria-labelledby="ev-advent">
+    <div class="event-head">
+      <h2 id="ev-advent">🎄 Power Platform Advent Calendar 2026</h2>
+      <span class="when">Videos published 1 to 24 December 2026 · 3 labs · English</span>
+    </div>
+    <div class="labs">
+      <a class="lab" href="vibe-coding/">
+        <span class="n">LAB 1</span>
+        <h3>Let's vibe code a Copilot Studio agent together</h3>
+        <p>Claude reads a workshop transcript, writes the blueprint, builds the onboarding workflow and publishes the agent on the Microsoft Copilot harness.</p>
+        <span class="meta">About 60 minutes · Claude · Azure command-line interface</span>
+        <span class="go">Start lab 1 →</span>
+      </a>
+      <a class="lab" href="failures/">
+        <span class="n">LAB 2</span>
+        <h3>Agents that died in production</h3>
+        <p>Build an onboarding agent, meet the ghosts of agents past one by one, fix each failure, then check your list twice before you publish.</p>
+        <span class="meta">About 45 minutes · Copilot Studio · Evaluate and Monitor</span>
+        <span class="go">Start lab 2 →</span>
+      </a>
+      <a class="lab" href="triggers/">
+        <span class="n">LAB 3</span>
+        <h3>Copilot Studio triggers</h3>
+        <p>A supplier document lands in SharePoint, a workflow wakes the agent, and a summary appears in Teams before anyone opens the file.</p>
+        <span class="meta">About 45 minutes · Copilot Studio workflow · Teams</span>
+        <span class="go">Start lab 3 →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="event" aria-labelledby="ev-lyon">
+    <div class="event-head">
+      <h2 id="ev-lyon">🦁 aMP Day Lyon 2026</h2>
+      <span class="when">17 November 2026 · 1 lab · French</span>
+    </div>
+    <div class="labs">
+      <a class="lab" href="https://e-margot.ch/lab/amp-lyon-2026">
+        <span class="n">LAB</span>
+        <h3>Let's build an agent together</h3>
+        <p>A Copilot Studio workflow built from a workshop transcript, then an onboarding agent that cites its sources. Written in French, like the session.</p>
+        <span class="meta">About 90 minutes · GitHub Copilot or Claude</span>
+        <span class="go">Open the Lyon lab →</span>
+      </a>
+    </div>
   </section>
 
   <section class="card author">
