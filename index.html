@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Advent Calendar 2026 labs</title>
+<meta name="description" content="Three step-by-step labs from the Power Platform Advent Calendar 2026: vibe code a Copilot Studio agent with Claude, the ghosts of agents past, and Copilot Studio triggers. By Elliot Margot, Microsoft MVP.">
+<meta property="og:title" content="Advent Calendar 2026 labs">
+<meta property="og:description" content="Rebuild the three Copilot Studio demos in your own test tenant, step by step.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232A3B4E'/%3E%3Cpath d='M18 40l9-18 9 12 5-7 6 13' fill='none' stroke='%23F26F21' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/lab.css">
+<style>
+  .labs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin: 8px 0 28px; }
+  .lab { display: flex; flex-direction: column; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+         box-shadow: var(--shadow); padding: 24px; text-decoration: none; color: var(--ink); transition: transform .15s ease, border-color .15s ease; }
+  .lab:hover { transform: translateY(-3px); border-color: var(--orange); }
+  .lab .n { font: 700 13px/1 "JetBrains Mono", Consolas, monospace; color: var(--orange); letter-spacing: .08em; }
+  .lab h3 { margin: 0; font-size: 1.3rem; }
+  .lab p { margin: 0; color: var(--muted); }
+  .lab .go { margin-top: auto; font-weight: 600; color: var(--orange); }
+  .lab .meta { font-size: .9rem; color: var(--muted); }
+  .hero .lead { color: rgba(255,255,255,.86); max-width: 720px; }
+  .hero .kicker { margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid"></div>
+  <div class="wrap">
+    <div class="topline">
+      <a class="brand" href="https://e-margot.ch" target="_blank" rel="noopener"><img src="assets/elliot-margot.webp" alt="">Elliot Margot</a>
+      <button class="theme-btn" id="theme" type="button" aria-label="Switch theme">🌓 Theme</button>
+    </div>
+    <div>
+      <span class="kicker"><span class="dot"></span>Labs · Power Platform Advent Calendar 2026</span>
+      <h1>Three demos, three <span class="grad">labs</span></h1>
+      <p class="lead">Each lab rebuilds one Advent Calendar demo in your own test tenant, one step at a time. Pick the one you watched.</p>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,80 480,0 720,30 C960,60 1200,10 1440,40 L1440,70 L0,70 Z" fill="var(--bg)"/></svg>
+</header>
+
+<main class="wrap">
+  <section class="labs" aria-label="The three labs">
+    <a class="lab" href="vibe-coding/">
+      <span class="n">LAB 1</span>
+      <h3>🎄 Let's vibe code a Copilot Studio agent together</h3>
+      <p>Claude reads a workshop transcript, writes the blueprint, builds the onboarding workflow and publishes the agent on the Microsoft Copilot harness.</p>
+      <span class="meta">About 60 minutes · Claude · Azure command-line interface</span>
+      <span class="go">Start lab 1 →</span>
+    </a>
+    <a class="lab" href="failures/">
+      <span class="n">LAB 2</span>
+      <h3>👻 Agents that died in production</h3>
+      <p>Build an onboarding agent, meet the ghosts of agents past one by one, fix each failure, then check your list twice before you publish.</p>
+      <span class="meta">About 45 minutes · Copilot Studio · Evaluate and Monitor</span>
+      <span class="go">Start lab 2 →</span>
+    </a>
+    <a class="lab" href="triggers/">
+      <span class="n">LAB 3</span>
+      <h3>🎁 Copilot Studio triggers</h3>
+      <p>A supplier document lands in SharePoint, a workflow wakes the agent, and a summary appears in Teams before anyone opens the file.</p>
+      <span class="meta">About 45 minutes · Copilot Studio workflow · Teams</span>
+      <span class="go">Start lab 3 →</span>
+    </a>
+  </section>
+
+  <section class="card author">
+    <div class="pic"><img src="assets/elliot-margot.webp" alt="Elliot Margot" loading="lazy"></div>
+    <div>
+      <h2>Who built these labs?</h2>
+      <div class="role">Elliot Margot · Microsoft MVP (Most Valuable Professional) for Microsoft 365 Copilot and Copilot Studio</div>
+      <p>Based in Lausanne, Elliot builds agents with Copilot Studio and Microsoft 365 Copilot, and prefers showing them live to showing slides. These labs follow his three videos for the Power Platform Advent Calendar 2026.</p>
+      <p>Every week he publishes <b>Agentic Weekly</b>, a short newsletter on what really changes in the world of agents.</p>
+      <div class="links">
+        <a href="https://www.linkedin.com/in/elliot-margot-52742a156/" target="_blank" rel="noopener">💼 LinkedIn</a>
+        <a href="https://e-margot.ch" target="_blank" rel="noopener">🌐 e-margot.ch</a>
+        <a href="https://e-margot.ch/community/newsletter" target="_blank" rel="noopener">📰 Agentic Weekly</a>
+        <a href="https://github.com/OwnOptic" target="_blank" rel="noopener">🐙 GitHub</a>
+      </div>
+      <img class="badge" src="assets/mvp-badge.png" alt="Microsoft Most Valuable Professional" loading="lazy">
+    </div>
+  </section>
+</main>
+
+<footer>Labs for the Power Platform Advent Calendar 2026.<br>Contoso, Fabrikam, Litware and Northwind are fictional companies; every document in these labs is an example. Made with ☕ in Lausanne by Elliot Margot.</footer>
+
+<script>
+(function () {
+  var root = document.documentElement, btn = document.getElementById('theme');
+  try { var t = localStorage.getItem('lab-theme'); if (t) root.setAttribute('data-theme', t); } catch (e) {}
+  btn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('lab-theme', next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
