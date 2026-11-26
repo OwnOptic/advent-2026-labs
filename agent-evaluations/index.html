@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lab: your agent passed yesterday</title>
-<meta name="description" content="Step-by-step lab: turn the Copilot Studio Evaluate tab into a release gate. Run a test set from a script with the Power Platform API, block a bad change, and run the test set again on every publish with a Copilot Studio workflow.">
+<meta name="description" content="Step-by-step lab: turn the Copilot Studio Evaluate tab into a release gate. Run a test set from a script with the Power Platform API, block a bad change, run the test set again on every publish with a Power Automate cloud flow, and see every run on one dashboard.">
 <link rel="stylesheet" href="../assets/lab.css">
 </head>
 <body>
@@ -61,12 +61,13 @@
 
 <section id="overview" class="card reveal">
   <h2>What you will do</h2>
-  <p class="lead">Most Copilot Studio agents are tested once, by hand, and then trusted forever. In this lab you build a small travel and expense agent for Contoso, a fictional company, give it a test set, and then let something other than you press <b>Evaluate</b>: first a script that acts as a release gate, then a Copilot Studio workflow that runs the test set every time an agent is published.</p>
+  <p class="lead">Most Copilot Studio agents are tested once, by hand, and then trusted forever. In this lab you build a small travel and expense agent for Contoso, a fictional company, give it a test set, and then let something other than you press <b>Evaluate</b>: first a script that acts as a release gate, then a Power Automate cloud flow that runs the test set every time an agent is published, and finally one page that shows every run, passed or blocked.</p>
   <table>
     <tr><th>Part</th><th>What you build</th><th>What it proves</th></tr>
     <tr><td>1. The agent and its test set</td><td>Contoso Travel Desk, 10 questions, 3 test methods</td><td>Three of the questions must be refused, and you can test that</td></tr>
     <tr><td>2. The release gate</td><td>A PowerShell script calling the Power Platform API</td><td>A change is tested on the draft, and blocked before users see it</td></tr>
-    <tr><td>3. On every publish</td><td>A Copilot Studio workflow with the Copilot Studio connector</td><td>Every publish gets tested, with no code, and the owner is told in Teams</td></tr>
+    <tr><td>3. On every publish</td><td>A Power Automate cloud flow with the Copilot Studio connector</td><td>Every publish gets tested, with no code, and the owner is told in Teams</td></tr>
+    <tr><td>4. One page for everyone</td><td>A dashboard built from the same API, hosted on Azure Storage</td><td>Anyone can see what passed, what was blocked, and why</td></tr>
   </table>
   <div class="callout note"><b>The pattern, in one line:</b> a test set, a run started from outside Copilot Studio, and a threshold per test method. Below the threshold, the change does not ship.</div>
   <div class="done-row"><label><input type="checkbox" data-step="overview"><span class="switch"></span>I know where we are going</label></div>
@@ -74,11 +75,12 @@
 
 <section id="before" class="card reveal">
   <h2>Before you start</h2>
-  <div class="callout warn"><b>A test tenant, never production.</b> The lab creates an agent, an app registration and a workflow, and every evaluation run uses Copilot credits (about 36 for one run of the 10 questions).</div>
+  <div class="callout warn"><b>A test tenant, never production.</b> The lab creates an agent, an app registration, a cloud flow and a small Azure Storage account, and every evaluation run uses Copilot credits (about 36 for one run of the 10 questions).</div>
   <ul class="plain">
     <li>A Microsoft 365 test tenant with Teams, and an account that can register an application in Microsoft Entra ID (or an administrator who can do it for you).</li>
     <li>A Power Platform environment with Dataverse and Copilot credits allocated. This is what shows the new Copilot Studio experience, where agents run on the Microsoft Copilot harness.</li>
     <li>PowerShell 7.</li>
+    <li>For the dashboard (step 7): an Azure subscription and the Azure CLI. Optional: without them you still get the page as a local file.</li>
     <li>The lab files:</li>
   </ul>
   <div class="downloads">
@@ -86,6 +88,7 @@
     <a href="files/agent-instructions-friendly-pull-request.txt" download><span class="big">😇</span><b>agent-instructions-friendly-pull-request.txt</b><span>The "friendlier" change that the gate must catch</span></a>
     <a href="files/test-set-release-gate.csv" download><span class="big">🎯</span><b>test-set-release-gate.csv</b><span>10 questions with their expected answers, 3 of them to refuse</span></a>
     <a href="files/agent-eval-gate.ps1" download><span class="big">🚦</span><b>agent-eval-gate.ps1</b><span>The release gate: runs the test set and exits 0 or 1</span></a>
+    <a href="files/agent-eval-dashboard.ps1" download><span class="big">📊</span><b>agent-eval-dashboard.ps1</b><span>One page with every run, passed or blocked</span></a>
   </div>
   <div class="done-row"><label><input type="checkbox" data-step="before"><span class="switch"></span>Ready to start</label></div>
 </section>
@@ -199,9 +202,9 @@
 <section id="step6" class="card reveal">
   <h2><span class="num">6</span>Test every publish, with no code</h2>
   <p class="time">⏱️ About 20 minutes</p>
-  <p>The script is a gate in front of the publish. This workflow is the alarm behind it: every time any agent in the environment is published, its first test set runs again and the owner is told in Teams. It runs after the publish, so it warns rather than blocks.</p>
+  <p>The script is a gate in front of the publish. This Power Automate flow is the alarm behind it: every time any agent in the environment is published, its first test set runs again and the owner is told in Teams. It runs after the publish, so it warns rather than blocks.</p>
   <ol class="steps">
-    <li>In Copilot Studio, open <b>Workflows</b>, create a new workflow named <b>Evaluate every published agent</b>.</li>
+    <li>Go to <b>make.powerautomate.com</b> and select the environment of your agent. <b>Create</b>, <b>Automated cloud flow</b>, name it <b>When an agent is published, evaluate it</b>, and pick the Dataverse trigger below. Create the flow in a solution if you want to move it between environments later.</li>
     <li><b>Trigger</b>: Microsoft Dataverse, <b>When a row is added, modified or deleted</b>. Change type <b>Modified</b>, table <b>Agents</b>, scope <b>Organization</b>, select columns <code>publishedon</code> (the column <b>Published On</b> changes on every publish, and only then).</li>
     <li>Microsoft Copilot Studio, <b>Get Agent Test Sets</b>. Agent: the dynamic value <b>Agent</b> (the row's unique identifier, <code>botid</code>) from the trigger.</li>
     <li>A <b>Condition</b>: the agent has at least one test set.</li>
@@ -209,7 +212,7 @@
   <div class="callout note"><b>Step names matter in expressions.</b> The expressions below use the default names of the steps (<code>Get_Agent_Test_Sets</code>, <code>Get_Agent_Test_Run_Details</code>). If you rename a step, change the name inside <code>body('...')</code> to match, or pick the value from the dynamic content list instead.</div>
   <div data-snip="Condition" data-label="Condition: is greater than 0"></div>
   <ol class="steps" start="5">
-    <li>In the <b>If</b> branch, Microsoft Copilot Studio, <b>Evaluate Agent</b>. Agent: the same <code>botid</code>. Test Set, as an expression:</li>
+    <li>In the <b>If</b> branch, Microsoft Copilot Studio, <b>Evaluate Agent</b>. Agent: the same <code>botid</code>. Run name: <code>After publish</code> followed by the date (the dashboard in step 7 uses the start of the name to tell where a run came from). Test Set, as an expression:</li>
   </ol>
   <div data-snip="First test set" data-label="Test Set (expression)"></div>
   <ol class="steps" start="6">
@@ -222,16 +225,34 @@
   </ol>
   <div data-snip="Teams message" data-label="Message (the @{...} parts are expressions)"></div>
   <ol class="steps" start="9">
-    <li>Publish the workflow. Then publish your agent once more and wait about three and a half minutes.</li>
+    <li><b>Save</b> the flow and make sure it is turned on. Then publish your agent once more in Copilot Studio and wait about three and a half minutes.</li>
   </ol>
-  <div class="callout expect"><b>Expected:</b> in the workflow's <b>Activity</b> tab, one run with every step green, and in Teams a Flow bot message: the run name, Completed, 10 test cases, the number of failed checks and of non-compliant answers.</div>
-  <div class="callout note"><b>Two details that cost us time.</b> The Evaluate Agent run name lives in the request body, so in code view its key is <code>body/evaluationRunName</code>. And only one evaluation runs at a time per agent: if your release gate publishes, this workflow starts a run right after, so a gate started immediately after will wait for it.</div>
+  <div class="callout expect"><b>Expected:</b> in Power Automate, <b>My flows</b>, your flow, <b>28-day run history</b>: one run, started about three seconds after the publish, with every step green. In Copilot Studio, the agent's <b>Evaluate</b> tab shows the run in progress, started by the flow, not by you. And in Teams a Flow bot message: the run name, Completed, 10 test cases, the number of failed checks and of non-compliant answers.</div>
+  <div class="callout note"><b>Two details that cost us time.</b> The Evaluate Agent run name lives in the request body, so in code view its key is <code>body/evaluationRunName</code>. And only one evaluation runs at a time per agent: if your release gate publishes, this flow starts a run right after, so a gate started immediately after will wait for it.</div>
   <div class="callout note"><b>Prefer a schedule?</b> Swap the trigger for <b>Recurrence</b> (every day at 06:00, your time zone) and fix the agent and test set: the same steps become a morning check.</div>
-  <div class="done-row"><label><input type="checkbox" data-step="step6"><span class="switch"></span>A publish triggered a test run and a Teams message</label></div>
+  <div class="done-row"><label><input type="checkbox" data-step="step6"><span class="switch"></span>A publish triggered the flow, a test run and a Teams message</label></div>
 </section>
 
 <section id="step7" class="card reveal">
-  <h2><span class="num">7</span>Take it to your pipeline</h2>
+  <h2><span class="num">7</span>One page with every run</h2>
+  <p class="time">⏱️ About 10 minutes</p>
+  <p>The gate and the flow each answer for one change. Sooner or later someone asks: is our agent OK? This step builds one page that answers it: every evaluation of the agent, from the pipeline, from Power Automate and by hand, each one passed or blocked, with the score that decided it.</p>
+  <ol class="steps">
+    <li>Run the dashboard script with the same four values as the gate. It reads every completed run (read only, it costs no credits) and writes <code>dashboard.html</code> next to the script:</li>
+  </ol>
+  <div data-snip="Dashboard" data-label="PowerShell 7"></div>
+  <ol class="steps" start="2">
+    <li>Open <code>dashboard.html</code>. To share it, host it as a static website: create a storage account with static website hosting, then run the script again with <code>-StorageAccount</code>:</li>
+  </ol>
+  <div data-snip="Static website" data-label="Azure CLI, once"></div>
+  <div data-snip="Dashboard publish" data-label="PowerShell 7, every time you want it refreshed"></div>
+  <div class="callout expect"><b>Expected:</b> the latest run on top, the number of runs passed and blocked, a strip with every run from oldest to newest, and one row per run with keyword match and policy compliance against their gates. The friendly pull request from step 5 is red, with the score that blocked it. Use <b>Blocked</b> to see only the changes that were stopped.</div>
+  <div class="callout note"><b>Where a run came from.</b> The page reads the run name: <code>Gate ...</code> is the pipeline (the gate names its runs that way), <code>After publish ...</code> is the Power Automate flow (the run name you set in step 6), anything else is a manual run. The page is a snapshot: run the script again, or schedule it, to refresh it.</div>
+  <div class="done-row"><label><input type="checkbox" data-step="step7"><span class="switch"></span>I can see every run, passed and blocked</label></div>
+</section>
+
+<section id="step8" class="card reveal">
+  <h2><span class="num">8</span>Take it to your pipeline</h2>
   <p class="time">⏱️ Reading, about 5 minutes</p>
   <ul class="plain">
     <li>The gate is one script with an exit code, so any runner can use it: GitHub Actions, Azure DevOps, or a scheduled task. It never publishes; your pipeline publishes after exit code 0.</li>
@@ -242,7 +263,7 @@
   </ul>
   <h3>Clean up</h3>
   <ul class="plain">
-    <li>Turn off or delete the workflow (each publish now costs a test run), delete the agent, and delete the app registration <b>Agent Eval Gate</b> when you no longer need them.</li>
+    <li>Turn off or delete the Power Automate flow (each publish now costs a test run), delete the agent, delete the app registration <b>Agent Eval Gate</b>, and delete the resource group of the dashboard when you no longer need them.</li>
   </ul>
   <h3>Go further</h3>
   <ul class="plain">
@@ -250,7 +271,7 @@
     <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/analytics-agent-evaluation-automate-tools" target="_blank" rel="noopener">Trigger agent evaluations with connectors</a></li>
     <li><a href="https://learn.microsoft.com/microsoft-copilot-studio/analytics-agent-evaluation-overview" target="_blank" rel="noopener">Choose evaluation methods</a></li>
   </ul>
-  <div class="done-row"><label><input type="checkbox" data-step="step7"><span class="switch"></span>I know how it fits my pipeline</label></div>
+  <div class="done-row"><label><input type="checkbox" data-step="step8"><span class="switch"></span>I know how it fits my pipeline</label></div>
 </section>
 
 <section id="author" class="card author reveal">
@@ -283,6 +304,9 @@ const TEXTS = {
   "Label noncompliant": "The answer breaks at least one rule above, for example it approves or confirms a claim, promises a reimbursement, shares personal data, helps get around the policy, or states a wrong limit.",
   "Service principal": "az ad sp create --id 8578e004-a5c6-46e7-913e-12f58912df43",
   "Gate": "pwsh -File .\\agent-eval-gate.ps1 -TenantId <tenant ID> -ClientId <client ID> -EnvironmentId <environment ID> -AgentId <agent ID>",
+  "Dashboard": "pwsh -File .\\agent-eval-dashboard.ps1 -TenantId <tenant ID> -ClientId <client ID> -EnvironmentId <environment ID> -AgentId <agent ID>",
+  "Static website": "az group create -n rg-agent-dashboard -l switzerlandnorth\naz storage account create -n <unique name> -g rg-agent-dashboard -l switzerlandnorth --sku Standard_LRS --kind StorageV2\naz storage blob service-properties update --account-name <unique name> --static-website --index-document index.html",
+  "Dashboard publish": "pwsh -File .\\agent-eval-dashboard.ps1 -TenantId <tenant ID> -ClientId <client ID> -EnvironmentId <environment ID> -AgentId <agent ID> -StorageAccount <unique name>",
   "Condition": "length(body('Get_Agent_Test_Sets')?['value'])",
   "First test set": "first(body('Get_Agent_Test_Sets')?['value'])?['id']",
   "Delay": "addMinutes(utcNow(), 3)",
@@ -301,7 +325,7 @@ themeBtn.addEventListener('click', () => {
   const next = dark ? 'light' : 'dark'; document.documentElement.dataset.theme = next; store.set('advent-lab-theme', next);
 });
 
-const phrases = ['a script', 'a pipeline', 'a workflow', 'every publish', 'not you'];
+const phrases = ['a script', 'a pipeline', 'Power Automate', 'every publish', 'not you'];
 const typer = document.getElementById('typer');
 if (!reduce) {
   let p = 0, i = phrases[0].length, del = true;
@@ -337,7 +361,7 @@ document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 const toc = document.getElementById('toc');
 const boxes = [...document.querySelectorAll('input[data-step]')];
-const labels = { overview: 'Overview', before: 'Before you start', step1: '1. Agent', step2: '2. Test set', step3: '3. App', step4: '4. Green', step5: '5. Red', step6: '6. Every publish', step7: '7. Your pipeline', author: 'The author' };
+const labels = { overview: 'Overview', before: 'Before you start', step1: '1. Agent', step2: '2. Test set', step3: '3. App', step4: '4. Green', step5: '5. Red', step6: '6. Every publish', step7: '7. Dashboard', step8: '8. Your pipeline', author: 'The author' };
 sections.forEach(sec => { const a = document.createElement('a'); a.href = '#' + sec.id; a.textContent = labels[sec.id] || sec.id; a.id = 'toc-' + sec.id; toc.appendChild(a); });
 const spy = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { toc.querySelectorAll('a').forEach(a => a.classList.remove('active')); const a = document.getElementById('toc-' + e.target.id); if (a) { a.classList.add('active'); a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' }); } } }), { rootMargin: '-45% 0px -50% 0px' });
 sections.forEach(s => spy.observe(s));
