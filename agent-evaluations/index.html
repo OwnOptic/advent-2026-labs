@@ -76,13 +76,22 @@
 <section id="before" class="card reveal">
   <h2>Before you start</h2>
   <div class="callout warn"><b>A test tenant, never production.</b> The lab creates an agent, an app registration, a cloud flow and a small Azure Storage account, and every evaluation run uses Copilot credits (about 36 for one run of the 10 questions).</div>
-  <ul class="plain">
-    <li>A Microsoft 365 test tenant with Teams, and an account that can register an application in Microsoft Entra ID (or an administrator who can do it for you).</li>
-    <li>A Power Platform environment with Dataverse and Copilot credits allocated. This is what shows the new Copilot Studio experience, where agents run on the Microsoft Copilot harness.</li>
-    <li>PowerShell 7.</li>
-    <li>For the dashboard (step 7): an Azure subscription and the Azure CLI. Optional: without them you still get the page as a local file.</li>
-    <li>The lab files:</li>
-  </ul>
+  <h3>Prerequisites: check them before step 1</h3>
+  <table>
+    <tr><th>Area</th><th>What you need</th><th>Needed for</th></tr>
+    <tr><td>Tenant</td><td>A Microsoft 365 test tenant, and a user with a Microsoft Teams licence (the flow sends its message through the Flow bot in Teams).</td><td>All steps</td></tr>
+    <tr><td>Power Platform environment</td><td>An environment <b>with a Dataverse database</b>, in a region where Copilot Studio is available. A Sandbox or Developer environment is fine.</td><td>All steps</td></tr>
+    <tr><td>Copilot credits</td><td>Copilot credits allocated to that environment in the Power Platform admin center (Licensing, Copilot Studio). Without them, evaluations do not run and the new Copilot Studio experience, with the Microsoft Copilot harness, is not offered. Budget about 36 credits per run of the 10 questions; the whole lab is a handful of runs, so a few hundred credits are enough.</td><td>Steps 1, 2, 4 to 7</td></tr>
+    <tr><td>Dataverse access</td><td>The <b>System Customizer</b> or <b>System Administrator</b> security role in that environment. The flow's trigger reads the <b>Agents</b> table (<code>bot</code>) with scope Organization, for every agent, so it needs organization-level read on that table, which both roles include. In a test environment, the simplest is to be System Administrator.</td><td>Step 6</td></tr>
+    <tr><td>The agent</td><td>You are an owner or editor of the agent. The evaluation API and the connector act as you, so you can only evaluate agents you can edit.</td><td>Steps 4 to 7</td></tr>
+    <tr><td>Power Automate licence</td><td><b>Microsoft Dataverse</b> is a premium connector, so the flow needs a licence that includes premium connectors, for example Power Automate Premium or a trial of it. The Microsoft Copilot Studio and Microsoft Teams connectors are used in the same flow.</td><td>Step 6</td></tr>
+    <tr><td>Data policy</td><td>The environment's data policy (data loss prevention) puts <b>Microsoft Dataverse</b>, <b>Microsoft Copilot Studio</b> and <b>Microsoft Teams</b> in the same group, or the flow is suspended when you save it.</td><td>Step 6</td></tr>
+    <tr><td>Microsoft Entra ID</td><td>The right to register an application (the Application Developer role, or app registration open to users), plus an administrator who can add the Power Platform API to the tenant once (Cloud Application Administrator or Application Administrator) if it is not there yet.</td><td>Step 3</td></tr>
+    <tr><td>Your computer</td><td>PowerShell 7. For the dashboard, the Azure CLI.</td><td>Steps 4, 5, 7</td></tr>
+    <tr><td>Azure (optional)</td><td>A subscription where you can create a resource group and a storage account (the Contributor role is enough). Without it, the dashboard still works as a local file.</td><td>Step 7</td></tr>
+  </table>
+  <div class="callout note"><b>Quick check.</b> Open Copilot Studio in the environment: if you can create an agent and see the <b>Evaluate</b> tab, the environment and credits are fine. Open Power Automate in the same environment, create an automated cloud flow and search the trigger <b>When a row is added, modified or deleted</b>: if you can pick the table <b>Agents</b> with scope <b>Organization</b>, your Dataverse access is fine.</div>
+  <h3>The lab files</h3>
   <div class="downloads">
     <a href="files/agent-instructions.txt" download><span class="big">🧭</span><b>agent-instructions.txt</b><span>The approved instructions of Contoso Travel Desk, with the 2026 travel policy</span></a>
     <a href="files/agent-instructions-friendly-pull-request.txt" download><span class="big">😇</span><b>agent-instructions-friendly-pull-request.txt</b><span>The "friendlier" change that the gate must catch</span></a>
