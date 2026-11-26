@@ -7,6 +7,8 @@
 #   3. polls until the run completes,
 #   4. computes the pass rate of each test method and compares it with your thresholds,
 #   5. exits 0 when every threshold holds (safe to publish) and 1 when one fails (do not publish).
+#   With -Retries 1, a red run is run once more and the gate blocks only if it fails again: a real regression fails
+#   every time, a grader's false positive usually does not. Each retry is one more run (about 36 credits for 10 cases).
 # It never publishes and never changes the agent.
 #
 # Example:
@@ -19,6 +21,7 @@ param(
   [string]$TestSetName = 'Release gate',
   [hashtable]$Thresholds = @{ 'Policy compliance' = 100; 'Keyword match' = 80 },
   [switch]$RunOnPublished,
+  [ValidateRange(0, 3)] [int]$Retries = 0,   # false positives: rerun a red result before blocking
   [string]$AccessToken   # optional: a token you already have (for example in a CI runner); skips the device code
 )
 $ErrorActionPreference = 'Stop'
@@ -47,13 +50,15 @@ $v = 'api-version=2024-10-01'
 $sets = (Invoke-RestMethod -Uri "$api/testsets?$v" -Headers $H).value
 $set = $sets | Where-Object displayName -eq $TestSetName | Select-Object -First 1
 if (-not $set) { throw "Test set '$TestSetName' not found. Test sets on this agent: $(($sets.displayName) -join ', ')" }
+for ($attempt = 1; $attempt -le 1 + $Retries; $attempt++) {
+if ($attempt -gt 1) { Say "`nRed on attempt $($attempt - 1): read the reasons above. Running the test set again before blocking (retry $($attempt - 1) of $Retries)." Yellow }
 foreach ($i in 1..40) {   # one run at a time per agent
   $busy = @((Invoke-RestMethod -Uri "$api/testruns?$v" -Headers $H).value | Where-Object { $_.state -in 'Queued', 'InProgress' })
   if (-not $busy) { break }; if ($i -eq 1) { Say 'Another run is in progress on this agent: waiting.' Yellow }; Start-Sleep 10
 }
 $target = if ($RunOnPublished) { 'published agent' } else { 'draft' }
 Say "`nRunning '$($set.displayName)' ($($set.totalTestCases) cases) on the $target" Cyan
-$body = @{ evaluationRunName = "Gate $(Get-Date -Format 'yyyy-MM-dd HH:mm')"; runOnPublishedBot = [bool]$RunOnPublished } | ConvertTo-Json
+$body = @{ evaluationRunName = "Gate $(Get-Date -Format 'yyyy-MM-dd HH:mm')$(if ($attempt -gt 1) { " retry $($attempt - 1)" })"; runOnPublishedBot = [bool]$RunOnPublished } | ConvertTo-Json
 $run = Invoke-RestMethod -Method Post -Uri "$api/testsets/$($set.id)/run?$v" -Headers $H -ContentType 'application/json' -Body $body
 
 # 3. Poll
@@ -86,7 +91,10 @@ foreach ($name in ($stats.Keys | Sort-Object)) {
 foreach ($f in ($fails | Where-Object { $null -ne $Thresholds[$_.Method] })) { Say "  - [$($f.Method)] case $($f.Case): $($f.Why)" Yellow }
 Say ("`nCost: {0:n1} Copilot credits, {1:n0} seconds. Details: https://copilotstudio.microsoft.com/environments/$EnvironmentId/agents/$AgentId/evaluate" -f $credits, ((Get-Date) - $t0).TotalSeconds)
 
+if (-not $red) { break }
+}
+
 # 5. The decision
-if ($red) { Say "`nGATE FAILED: do not publish this draft." Red; exit 1 }
-Say "`nGATE PASSED: safe to publish." Green; exit 0
+if ($red) { Say "`nGATE FAILED$(if ($Retries) { " $($attempt - 1) times in a row" }): do not publish this draft." Red; exit 1 }
+Say "`nGATE PASSED$(if ($attempt -gt 1) { " on retry $($attempt - 1): the earlier red was a false positive, read its reason" }): safe to publish." Green; exit 0
 

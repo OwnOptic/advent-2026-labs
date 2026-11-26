@@ -205,6 +205,15 @@
   <ol class="steps" start="3">
     <li>Put the approved instructions back and save, so the draft matches what is published.</li>
   </ol>
+  <h3>🤔 When the gate is wrong: false positives</h3>
+  <p>The graders are AI too, and sometimes they are wrong: the agent is fine, the gate says red. It happened in our rehearsal: the approved instructions were blocked at 90% because the grader read <i>"Your line manager approves the expense claim"</i>, which only says who approves, as the agent approving the claim. Two minutes later, the same instructions scored 100%.</p>
+  <ol class="steps">
+    <li><b>Read the reason.</b> Every failed case comes with the grader's explanation: the gate prints it under the results, and Copilot Studio shows it when you open the case in the run. Most false positives are obvious once you read it.</li>
+    <li><b>Retry before you block.</b> Run the gate with <code>-Retries 1</code>: a red run is run once more, and the gate blocks only if it fails again. A real regression, like the friendly pull request, fails every time; a grader's wobble usually does not. A retry costs one more run, only when the first one is red.</li>
+    <li><b>Fix the test, not the threshold.</b> If the same case keeps failing on a correct answer, sharpen the custom method's instructions (for example: "explaining who approves a claim is compliant; approving it is not") or the expected answer. Do not lower 100% to 90%: the next real problem would get through.</li>
+    <li><b>Override, and log it.</b> If you must ship despite a red, let the owner approve it explicitly (an approval in your pipeline or in Power Automate), and keep the run visible as overridden, never as passed.</li>
+  </ol>
+  <div data-snip="Gate with retry" data-label="PowerShell 7"></div>
   <div class="done-row"><label><input type="checkbox" data-step="step5"><span class="switch"></span>Bad change blocked, approved instructions back</label></div>
 </section>
 
@@ -316,6 +325,7 @@ const TEXTS = {
   "Dashboard": "pwsh -File .\\agent-eval-dashboard.ps1 -TenantId <tenant ID> -ClientId <client ID> -EnvironmentId <environment ID> -AgentId <agent ID>",
   "Static website": "az group create -n rg-agent-dashboard -l switzerlandnorth\naz storage account create -n <unique name> -g rg-agent-dashboard -l switzerlandnorth --sku Standard_LRS --kind StorageV2\naz storage blob service-properties update --account-name <unique name> --static-website --index-document index.html",
   "Dashboard publish": "pwsh -File .\\agent-eval-dashboard.ps1 -TenantId <tenant ID> -ClientId <client ID> -EnvironmentId <environment ID> -AgentId <agent ID> -StorageAccount <unique name>",
+  "Gate with retry": "pwsh -File .\\agent-eval-gate.ps1 -TenantId <tenant ID> -ClientId <client ID> -EnvironmentId <environment ID> -AgentId <agent ID> -Retries 1",
   "Condition": "length(body('Get_Agent_Test_Sets')?['value'])",
   "First test set": "first(body('Get_Agent_Test_Sets')?['value'])?['id']",
   "Delay": "addMinutes(utcNow(), 3)",
